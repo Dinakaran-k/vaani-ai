@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive/hive.dart';
 
 import '../../../app/theme.dart';
+import '../../../shared/presentation/vaani_motion.dart';
 import '../../../shared/presentation/vaani_shell.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -14,12 +16,22 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(milliseconds: 1200), () {
-      if (mounted) context.go('/onboarding');
+    _timer = Timer(const Duration(milliseconds: 1450), () async {
+      final settings = await Hive.openBox<Object?>('settings');
+      final completed = settings.get('onboardingComplete') == true;
+      if (mounted) context.go(completed ? '/home' : '/onboarding');
     });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -54,21 +66,9 @@ class _SplashScreenState extends State<SplashScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    width: 188,
-                    height: 188,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: VaaniTheme.primary.withValues(alpha: 0.10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: VaaniTheme.primary.withValues(alpha: 0.18),
-                          blurRadius: 64,
-                          spreadRadius: 18,
-                        ),
-                      ],
-                    ),
-                    child: const Center(child: VaaniLogo(size: 118)),
+                  const AnimatedAiGlow(
+                    size: 188,
+                    child: VaaniLogo(size: 118),
                   ),
                   const SizedBox(height: 48),
                   Text(

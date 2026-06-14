@@ -15,56 +15,7 @@ class OcrScreen extends StatelessWidget {
             Column(
               children: [
                 const VaaniAppHeader(subtitle: 'Invoice Scanner'),
-                Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 8),
-                    decoration: const BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(
-                          'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=900&q=70',
-                        ),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    child: Container(
-                      color: Colors.black.withValues(alpha: 0.42),
-                      child: Center(
-                        child: Container(
-                          width: 320,
-                          height: 220,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: VaaniTheme.primary,
-                              width: 4,
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Align(
-                            alignment: Alignment.topRight,
-                            child: Container(
-                              margin: const EdgeInsets.all(16),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 9,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Text(
-                                'Total: Rs 12,450',
-                                style: TextStyle(
-                                  color: VaaniTheme.primary,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                const Expanded(child: _ScannerPreview()),
               ],
             ),
             DraggableScrollableSheet(
@@ -137,6 +88,149 @@ class OcrScreen extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: const VaaniBottomNav(current: 'scanner'),
+    );
+  }
+}
+
+class _ScannerPreview extends StatefulWidget {
+  const _ScannerPreview();
+
+  @override
+  State<_ScannerPreview> createState() => _ScannerPreviewState();
+}
+
+class _ScannerPreviewState extends State<_ScannerPreview>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1800),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF303038), Color(0xFF0F172A)],
+        ),
+      ),
+      child: Center(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              width: 230,
+              height: 330,
+              padding: const EdgeInsets.all(22),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF7F2EA),
+                borderRadius: BorderRadius.circular(22),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.38),
+                    blurRadius: 36,
+                    offset: const Offset(0, 20),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'INVOICE',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 18),
+                  for (var i = 0; i < 7; i++) ...[
+                    Container(
+                      height: 10,
+                      width: i.isEven ? 150 : 112,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD8D2C7),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                  const Spacer(),
+                  Container(
+                    height: 14,
+                    width: 180,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFCAC3B8),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: 320,
+              height: 220,
+              decoration: BoxDecoration(
+                border: Border.all(color: VaaniTheme.primary, width: 4),
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+            AnimatedBuilder(
+              animation: _controller,
+              builder: (context, _) {
+                return Positioned(
+                  top: 86 + _controller.value * 176,
+                  child: Container(
+                    width: 316,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      gradient: VaaniTheme.aiGradient,
+                      borderRadius: BorderRadius.circular(999),
+                      boxShadow: [
+                        BoxShadow(
+                          color: VaaniTheme.primary.withValues(alpha: 0.36),
+                          blurRadius: 18,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+            Positioned(
+              top: 72,
+              right: 32,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Text(
+                  'Total: Rs 12,450',
+                  style: TextStyle(
+                    color: VaaniTheme.primary,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

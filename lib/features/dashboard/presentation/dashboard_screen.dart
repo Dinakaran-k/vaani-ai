@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/theme.dart';
+import '../../../shared/presentation/vaani_motion.dart';
 import '../../../shared/presentation/vaani_shell.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -18,11 +19,17 @@ class DashboardScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
               sliver: SliverList.list(
                 children: [
-                  const _SalesSummaryCard(),
+                  const VaaniEntrance(child: _SalesSummaryCard()),
                   const SizedBox(height: 16),
-                  const _AiInsightCard(),
+                  const VaaniEntrance(
+                    delay: Duration(milliseconds: 90),
+                    child: _AiInsightCard(),
+                  ),
                   const SizedBox(height: 18),
-                  _VoiceCommandCard(onTap: () => context.go('/voice')),
+                  VaaniEntrance(
+                    delay: const Duration(milliseconds: 160),
+                    child: _VoiceCommandCard(onTap: () => context.go('/voice')),
+                  ),
                   const SizedBox(height: 22),
                   const VaaniSectionTitle('Daily operations'),
                   const SizedBox(height: 12),

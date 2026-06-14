@@ -97,7 +97,13 @@ class _InventoryTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(18),
       onTap: () => showModalBottomSheet<void>(
         context: context,
+        isScrollControlled: true,
         showDragHandle: true,
+        backgroundColor: VaaniTheme.surface,
+        barrierColor: Colors.black.withValues(alpha: 0.62),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
         builder: (_) => _UpdateStockSheet(product: product),
       ),
       child: VaaniCard(

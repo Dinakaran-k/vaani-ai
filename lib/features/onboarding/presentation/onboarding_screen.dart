@@ -1,13 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive/hive.dart';
 
 import '../../../app/theme.dart';
+import '../../../shared/presentation/vaani_motion.dart';
 
-class OnboardingScreen extends StatelessWidget {
+class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen> {
+  final _controller = PageController();
+  var _index = 0;
+
+  static const _pages = [
+    _OnboardingPageData(
+      title: 'Manage Business with',
+      highlight: 'Voice',
+      body:
+          'Add stock, record sales, and check reports just by talking. Available in Hindi, English, and more.',
+      icon: Icons.graphic_eq,
+      color: Color(0xFF8AC8B8),
+    ),
+    _OnboardingPageData(
+      title: 'Scan Invoices with',
+      highlight: 'AI OCR',
+      body:
+          'Capture paper bills, extract GST details, and prepare inventory updates in seconds.',
+      icon: Icons.document_scanner_outlined,
+      color: Color(0xFFE1E0FF),
+    ),
+    _OnboardingPageData(
+      title: 'Track Udhaar and',
+      highlight: 'Payments',
+      body:
+          'See pending dues, identify likely payers, and send polite reminders over WhatsApp or SMS.',
+      icon: Icons.currency_rupee_rounded,
+      color: Color(0xFFFFDCC5),
+    ),
+    _OnboardingPageData(
+      title: 'Grow with',
+      highlight: 'Insights',
+      body:
+          'Ask Vaani what is selling, what is low, and what needs attention before the rush begins.',
+      icon: Icons.auto_graph_rounded,
+      color: Color(0xFF6CF8BB),
+    ),
+  ];
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isLast = _index == _pages.length - 1;
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -19,40 +71,48 @@ class OnboardingScreen extends StatelessWidget {
                     center: Alignment.topLeft,
                     radius: 1.1,
                     colors: [
-                      VaaniTheme.secondaryContainer.withValues(alpha: 0.22),
+                      _pages[_index].color.withValues(alpha: 0.25),
                       VaaniTheme.surface,
                     ],
                   ),
                 ),
               ),
             ),
-            ListView(
-              padding: const EdgeInsets.fromLTRB(20, 44, 20, 168),
-              children: [
-                const _MerchantIllustration(),
-                const SizedBox(height: 48),
-                Text.rich(
-                  TextSpan(
-                    text: 'Manage Business with\n',
-                    children: [
+            PageView.builder(
+              controller: _controller,
+              itemCount: _pages.length,
+              onPageChanged: (value) => setState(() => _index = value),
+              itemBuilder: (context, index) {
+                final page = _pages[index];
+                return ListView(
+                  padding: const EdgeInsets.fromLTRB(20, 44, 20, 182),
+                  children: [
+                    _OnboardingIllustration(page: page),
+                    const SizedBox(height: 48),
+                    Text.rich(
                       TextSpan(
-                        text: 'Voice',
-                        style: TextStyle(color: VaaniTheme.primary),
+                        text: '${page.title}\n',
+                        children: [
+                          TextSpan(
+                            text: page.highlight,
+                            style: const TextStyle(color: VaaniTheme.primary),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.displaySmall,
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Add stock, record sales, and check reports just by talking. Available in Hindi, English, and more.',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: VaaniTheme.onSurfaceVariant,
-                      ),
-                ),
-              ],
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.displaySmall,
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      page.body,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: VaaniTheme.onSurfaceVariant,
+                          ),
+                    ),
+                  ],
+                );
+              },
             ),
             Align(
               alignment: Alignment.bottomCenter,
@@ -61,25 +121,30 @@ class OnboardingScreen extends StatelessWidget {
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0x1F4648D4),
+                      blurRadius: 28,
+                      offset: Offset(0, -10),
+                    ),
+                  ],
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _PagePill(active: true),
-                        _PagePill(),
-                        _PagePill(),
-                        _PagePill(),
+                        for (var i = 0; i < _pages.length; i++)
+                          _PagePill(active: i == _index),
                       ],
                     ),
                     const SizedBox(height: 24),
                     FilledButton.icon(
-                      onPressed: () => context.go('/home'),
+                      onPressed: () => isLast ? _finish() : _nextPage(),
                       iconAlignment: IconAlignment.end,
                       icon: const Icon(Icons.arrow_forward_rounded),
-                      label: const Text('Get Started'),
+                      label: Text(isLast ? 'Start Using Vaani' : 'Get Started'),
                     ),
                     const SizedBox(height: 18),
                     TextButton(
@@ -95,22 +160,38 @@ class OnboardingScreen extends StatelessWidget {
       ),
     );
   }
+
+  Future<void> _finish() async {
+    final settings = await Hive.openBox<Object?>('settings');
+    await settings.put('onboardingComplete', true);
+    if (mounted) context.go('/home');
+  }
+
+  void _nextPage() {
+    _controller.nextPage(
+      duration: const Duration(milliseconds: 360),
+      curve: Curves.easeOutCubic,
+    );
+  }
 }
 
-class _MerchantIllustration extends StatelessWidget {
-  const _MerchantIllustration();
+class _OnboardingIllustration extends StatelessWidget {
+  const _OnboardingIllustration({required this.page});
+
+  final _OnboardingPageData page;
 
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: 1,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
-          color: const Color(0xFF8AC8B8),
+          color: page.color,
           borderRadius: BorderRadius.circular(32),
           boxShadow: [
             BoxShadow(
-              color: VaaniTheme.secondary.withValues(alpha: 0.14),
+              color: page.color.withValues(alpha: 0.28),
               blurRadius: 36,
               offset: const Offset(0, 18),
             ),
@@ -120,24 +201,21 @@ class _MerchantIllustration extends StatelessWidget {
           alignment: Alignment.center,
           children: [
             Container(
-              width: 160,
+              width: 162,
               height: 246,
               decoration: BoxDecoration(
-                color: const Color(0xFFE6FFFA),
+                color: const Color(0xFFEFFDF8),
                 borderRadius: BorderRadius.circular(34),
                 border: Border.all(color: const Color(0xFF102A43), width: 8),
               ),
             ),
-            Positioned(
-              top: 72,
+            AnimatedAiGlow(
+              size: 154,
+              glowColor: page.color,
               child: CircleAvatar(
-                radius: 56,
-                backgroundColor: const Color(0xFFFFB783),
-                child: Icon(
-                  Icons.storefront_rounded,
-                  color: const Color(0xFF102A43),
-                  size: 54,
-                ),
+                radius: 58,
+                backgroundColor: Colors.white,
+                child: Icon(page.icon, color: VaaniTheme.primary, size: 58),
               ),
             ),
             Positioned(
@@ -156,37 +234,18 @@ class _MerchantIllustration extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const _MiniWaveform(),
+                child: const AnimatedVaaniWaveform(
+                  barCount: 5,
+                  width: 6,
+                  minHeight: 18,
+                  maxHeight: 44,
+                  spacing: 6,
+                ),
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-}
-
-class _MiniWaveform extends StatelessWidget {
-  const _MiniWaveform();
-
-  @override
-  Widget build(BuildContext context) {
-    const heights = [20.0, 32.0, 42.0, 28.0, 36.0];
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        for (final height in heights)
-          Container(
-            width: 6,
-            height: height,
-            margin: const EdgeInsets.symmetric(horizontal: 6),
-            decoration: BoxDecoration(
-              color: VaaniTheme.primary,
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-      ],
     );
   }
 }
@@ -199,7 +258,8 @@ class _PagePill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 180),
+      duration: const Duration(milliseconds: 240),
+      curve: Curves.easeOutCubic,
       width: active ? 58 : 14,
       height: 8,
       margin: const EdgeInsets.symmetric(horizontal: 5),
@@ -209,4 +269,20 @@ class _PagePill extends StatelessWidget {
       ),
     );
   }
+}
+
+class _OnboardingPageData {
+  const _OnboardingPageData({
+    required this.title,
+    required this.highlight,
+    required this.body,
+    required this.icon,
+    required this.color,
+  });
+
+  final String title;
+  final String highlight;
+  final String body;
+  final IconData icon;
+  final Color color;
 }

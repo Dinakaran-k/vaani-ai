@@ -2,20 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/theme.dart';
+import '../../../shared/presentation/vaani_motion.dart';
 import '../../../shared/presentation/vaani_shell.dart';
 
-class VoiceAssistantScreen extends StatelessWidget {
+class VoiceAssistantScreen extends StatefulWidget {
   const VoiceAssistantScreen({super.key});
+
+  @override
+  State<VoiceAssistantScreen> createState() => _VoiceAssistantScreenState();
+}
+
+class _VoiceAssistantScreenState extends State<VoiceAssistantScreen> {
+  var _listening = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
+      body: AnimatedContainer(
+        duration: const Duration(milliseconds: 320),
+        decoration: BoxDecoration(
           gradient: RadialGradient(
             center: Alignment.center,
-            radius: 0.82,
-            colors: [Color(0xFFE1E0FF), VaaniTheme.surface],
+            radius: _listening ? 0.82 : 1.0,
+            colors: [
+              _listening ? const Color(0xFFE1E0FF) : const Color(0xFFDDF7EF),
+              VaaniTheme.surface,
+            ],
           ),
         ),
         child: SafeArea(
@@ -30,12 +42,18 @@ class VoiceAssistantScreen extends StatelessWidget {
                       icon: const Icon(Icons.close_rounded),
                     ),
                     const Spacer(),
-                    const Text(
-                      'Listening',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        color: VaaniTheme.primary,
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 220),
+                      child: Text(
+                        _listening ? 'Listening' : 'Thinking',
+                        key: ValueKey(_listening),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: _listening
+                              ? VaaniTheme.primary
+                              : VaaniTheme.secondary,
+                        ),
                       ),
                     ),
                     const Spacer(),
@@ -46,35 +64,37 @@ class VoiceAssistantScreen extends StatelessWidget {
                   ],
                 ),
                 const Spacer(),
-                Container(
-                  width: 230,
-                  height: 230,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: VaaniTheme.primary.withValues(alpha: 0.08),
-                    boxShadow: [
-                      BoxShadow(
-                        color: VaaniTheme.primary.withValues(alpha: 0.18),
-                        blurRadius: 70,
-                        spreadRadius: 26,
+                AnimatedAiGlow(
+                  size: 244,
+                  glowColor:
+                      _listening ? VaaniTheme.primary : VaaniTheme.secondary,
+                  child: const AnimatedVaaniWaveform(),
+                ),
+                const SizedBox(height: 48),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 260),
+                  child: Column(
+                    key: ValueKey(_listening),
+                    children: [
+                      Text(
+                        _listening
+                            ? 'How can I help your shop?'
+                            : 'Finding the right action...',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        _listening
+                            ? 'Speak naturally in Hindi, English, Hinglish, Tamil, Telugu, Gujarati, Marathi, and more.'
+                            : 'Vaani validates your command before changing business data.',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: VaaniTheme.onSurfaceVariant,
+                            ),
                       ),
                     ],
                   ),
-                  child: const Center(child: _LargeWaveform()),
-                ),
-                const SizedBox(height: 48),
-                Text(
-                  'How can I help your shop?',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Speak naturally in Hindi, English, Hinglish, Tamil, Telugu, Gujarati, Marathi, and more.',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: VaaniTheme.onSurfaceVariant,
-                      ),
                 ),
                 const Spacer(),
                 Wrap(
@@ -90,9 +110,9 @@ class VoiceAssistantScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 FilledButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.mic_rounded),
-                  label: const Text('Hold to speak'),
+                  onPressed: () => setState(() => _listening = !_listening),
+                  icon: Icon(_listening ? Icons.mic_rounded : Icons.stop),
+                  label: Text(_listening ? 'Hold to speak' : 'Stop'),
                 ),
               ],
             ),
@@ -100,31 +120,6 @@ class VoiceAssistantScreen extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: const VaaniBottomNav(current: 'voice'),
-    );
-  }
-}
-
-class _LargeWaveform extends StatelessWidget {
-  const _LargeWaveform();
-
-  @override
-  Widget build(BuildContext context) {
-    const heights = [26.0, 68.0, 110.0, 76.0, 42.0, 90.0, 52.0];
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        for (final height in heights)
-          Container(
-            width: 14,
-            height: height,
-            margin: const EdgeInsets.symmetric(horizontal: 5),
-            decoration: BoxDecoration(
-              gradient: VaaniTheme.aiGradient,
-              borderRadius: BorderRadius.circular(14),
-            ),
-          ),
-      ],
     );
   }
 }
