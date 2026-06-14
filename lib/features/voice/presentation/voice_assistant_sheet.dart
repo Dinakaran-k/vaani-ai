@@ -1,40 +1,62 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../app/theme.dart';
 import '../../../shared/presentation/vaani_motion.dart';
-import '../../../shared/presentation/vaani_shell.dart';
 
-class VoiceAssistantScreen extends StatefulWidget {
-  const VoiceAssistantScreen({super.key});
-
-  @override
-  State<VoiceAssistantScreen> createState() => _VoiceAssistantScreenState();
+Future<void> showVoiceAssistantSheet(BuildContext context) {
+  return showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    barrierColor: Colors.black.withValues(alpha: 0.64),
+    builder: (sheetContext) => const _VoiceAssistantSheet(),
+  );
 }
 
-class _VoiceAssistantScreenState extends State<VoiceAssistantScreen> {
+class _VoiceAssistantSheet extends StatefulWidget {
+  const _VoiceAssistantSheet();
+
+  @override
+  State<_VoiceAssistantSheet> createState() => _VoiceAssistantSheetState();
+}
+
+class _VoiceAssistantSheetState extends State<_VoiceAssistantSheet> {
   var _listening = true;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment.center,
-            radius: 0.82,
-            colors: [Color(0xFFE1E0FF), VaaniTheme.surface],
-          ),
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
-            child: Column(
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    return Padding(
+      padding: EdgeInsets.only(bottom: bottomInset),
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.82,
+        minChildSize: 0.66,
+        maxChildSize: 0.96,
+        builder: (context, controller) {
+          return Container(
+            decoration: const BoxDecoration(
+              color: VaaniTheme.surface,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+            ),
+            child: ListView(
+              controller: controller,
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 28),
               children: [
+                Center(
+                  child: Container(
+                    width: 58,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFC7C4D7),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
                 Row(
                   children: [
                     IconButton.filledTonal(
-                      onPressed: () => context.go('/home'),
+                      onPressed: () => Navigator.of(context).pop(),
                       icon: const Icon(Icons.close_rounded),
                     ),
                     const Spacer(),
@@ -59,40 +81,38 @@ class _VoiceAssistantScreenState extends State<VoiceAssistantScreen> {
                     ),
                   ],
                 ),
-                const Spacer(),
+                const SizedBox(height: 28),
                 AnimatedAiGlow(
-                  size: 244,
+                  size: 220,
                   glowColor:
                       _listening ? VaaniTheme.primary : VaaniTheme.secondary,
-                  child: const AnimatedVaaniWaveform(),
-                ),
-                const SizedBox(height: 48),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 260),
-                  child: Column(
-                    key: ValueKey(_listening),
-                    children: [
-                      Text(
-                        _listening
-                            ? 'How can I help your shop?'
-                            : 'Finding the right action...',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.headlineMedium,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        _listening
-                            ? 'Speak naturally in Hindi, English, Hinglish, Tamil, Telugu, Gujarati, Marathi, and more.'
-                            : 'Vaani validates your command before changing business data.',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: VaaniTheme.onSurfaceVariant,
-                            ),
-                      ),
-                    ],
+                  child: const AnimatedVaaniWaveform(
+                    barCount: 7,
+                    width: 12,
+                    minHeight: 24,
+                    maxHeight: 104,
+                    spacing: 4,
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(height: 32),
+                Text(
+                  _listening
+                      ? 'How can I help your shop?'
+                      : 'Finding the right action...',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  _listening
+                      ? 'Speak naturally in Hindi, English, Hinglish, Tamil, Telugu, Gujarati, Marathi, and more.'
+                      : 'Vaani validates your command before changing business data.',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: VaaniTheme.onSurfaceVariant,
+                      ),
+                ),
+                const SizedBox(height: 24),
                 Wrap(
                   alignment: WrapAlignment.center,
                   spacing: 10,
@@ -112,10 +132,9 @@ class _VoiceAssistantScreenState extends State<VoiceAssistantScreen> {
                 ),
               ],
             ),
-          ),
-        ),
+          );
+        },
       ),
-      bottomNavigationBar: const VaaniBottomNav(current: 'voice'),
     );
   }
 }

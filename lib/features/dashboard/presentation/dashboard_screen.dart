@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/theme.dart';
 import '../../../shared/presentation/vaani_motion.dart';
 import '../../../shared/presentation/vaani_shell.dart';
+import '../../voice/presentation/voice_assistant_sheet.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -28,7 +29,9 @@ class DashboardScreen extends StatelessWidget {
                   const SizedBox(height: 18),
                   VaaniEntrance(
                     delay: const Duration(milliseconds: 160),
-                    child: _VoiceCommandCard(onTap: () => context.go('/voice')),
+                    child: _VoiceCommandCard(
+                      onTap: () => showVoiceAssistantSheet(context),
+                    ),
                   ),
                   const SizedBox(height: 22),
                   const VaaniSectionTitle('Daily operations'),
