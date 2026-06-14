@@ -1,0 +1,46 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isBusinessMember(businessId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/businesses/$(businessId)/members/$(request.auth.uid));
+    }
+
+    match /businesses/{businessId} {
+      allow read: if isBusinessMember(businessId);
+      allow create: if signedIn()
+        && request.resource.data.ownerUid == request.auth.uid;
+      allow update, delete: if signedIn()
+        && resource.data.ownerUid == request.auth.uid;
+
+      match /members/{uid} {
+        allow read: if isBusinessMember(businessId);
+        allow write: if signedIn()
+          && get(/databases/$(database)/documents/businesses/$(businessId)).data.ownerUid == request.auth.uid;
+      }
+
+      match /products/{productId} {
+        allow read: if isBusinessMember(businessId);
+        allow create, update: if isBusinessMember(businessId)
+          && request.resource.data.keys().hasOnly([
+            'id', 'businessId', 'name', 'searchName', 'category', 'quantity',
+            'unit', 'lowStockThreshold', 'updatedAt', 'barcode', 'gstRate',
+            'sellingPrice'
+          ]);
+        allow delete: if isBusinessMember(businessId);
+      }
+
+      match /sales/{saleId} {
+        allow read, write: if isBusinessMember(businessId);
+      }
+
+      match /paymentReminders/{reminderId} {
+        allow read, write: if isBusinessMember(businessId);
+      }
+    }
+  }
+}

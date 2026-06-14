@@ -1,0 +1,28 @@
+# Dart and Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+coverage/
+
+# Generated Firebase options can be committed once configured intentionally.
+# Keep local platform secrets out of source control.
+android/key.properties
+ios/Runner/GoogleService-Info.plist
+android/app/google-services.json
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Local portable tools
+tools/
