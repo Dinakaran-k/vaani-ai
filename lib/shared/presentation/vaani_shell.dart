@@ -19,7 +19,7 @@ class VaaniAppHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
       child: Row(
         children: [
-          const VaaniLogo(size: 48, label: 'SO'),
+          const VaaniLogo(size: 48),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -56,10 +56,9 @@ class VaaniAppHeader extends StatelessWidget {
 }
 
 class VaaniLogo extends StatelessWidget {
-  const VaaniLogo({super.key, this.size = 64, this.label});
+  const VaaniLogo({super.key, this.size = 64});
 
   final double size;
-  final String? label;
 
   @override
   Widget build(BuildContext context) {
@@ -78,16 +77,30 @@ class VaaniLogo extends StatelessWidget {
         ],
       ),
       child: Center(
-        child: label == null
-            ? Icon(Icons.auto_awesome, color: Colors.white, size: size * 0.44)
-            : Text(
-                label!,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: size * 0.32,
-                  fontWeight: FontWeight.w800,
-                ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Icon(Icons.mic_rounded, color: Colors.white, size: size * 0.38),
+            Positioned(
+              left: size * 0.28,
+              top: size * 0.22,
+              child: Icon(
+                Icons.auto_awesome_rounded,
+                color: Colors.white.withValues(alpha: 0.95),
+                size: size * 0.16,
               ),
+            ),
+            Positioned(
+              right: size * 0.22,
+              bottom: size * 0.26,
+              child: Icon(
+                Icons.auto_awesome_rounded,
+                color: Colors.white.withValues(alpha: 0.95),
+                size: size * 0.13,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

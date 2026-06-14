@@ -1,11 +1,11 @@
 {
-    "name": "vaani_ai",
-    "short_name": "vaani_ai",
+    "name": "Vaani AI",
+    "short_name": "Vaani AI",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#FCF8FF",
+    "theme_color": "#4648D4",
+    "description": "Vaani AI is a multilingual voice assistant for Indian small businesses.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
