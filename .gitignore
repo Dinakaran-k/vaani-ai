@@ -26,3 +26,6 @@ Thumbs.db
 
 # Local portable tools
 tools/
+
+# Local design reference exports
+screens/

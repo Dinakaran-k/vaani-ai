@@ -1,137 +1,274 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../application/inventory_providers.dart';
+import '../../../app/theme.dart';
+import '../../../shared/presentation/vaani_shell.dart';
 
-class InventoryScreen extends ConsumerWidget {
+class InventoryScreen extends StatelessWidget {
   const InventoryScreen({super.key});
 
-  static const _demoBusinessId = 'demo-business';
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final products = ref.watch(productsProvider(_demoBusinessId));
+  Widget build(BuildContext context) {
+    const products = [
+      _ProductUi('Basmati Rice', 'Premium 25kg bags', 42, 'in stock', true),
+      _ProductUi('Amul Milk 1L', 'Dairy and cold goods', 4, 'low stock', false),
+      _ProductUi(
+        'Thums Up 2L',
+        'Beverages and drinks',
+        0,
+        'out of stock',
+        false,
+      ),
+      _ProductUi('Surf Excel 1kg', 'Household supplies', 18, 'in stock', true),
+    ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Inventory'),
-        actions: [
-          IconButton.filledTonal(
-            tooltip: 'Scan barcode',
-            onPressed: () {},
-            icon: const Icon(Icons.qr_code_scanner),
-          ),
-          const SizedBox(width: 12),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
-        icon: const Icon(Icons.add),
-        label: const Text('Add stock'),
-      ),
-      body: products.when(
-        data: (items) {
-          if (items.isEmpty) {
-            return const _InventoryEmptyState();
-          }
-          return ListView.separated(
-            padding: const EdgeInsets.all(16),
-            itemCount: items.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
-            itemBuilder: (context, index) {
-              final product = items[index];
-              return ListTile(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                tileColor:
-                    Theme.of(context).colorScheme.surfaceContainerHighest,
-                leading: Container(
-                  width: 42,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(8),
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            const SliverToBoxAdapter(child: VaaniAppHeader()),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+              sliver: SliverList.list(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          decoration: InputDecoration(
+                            hintText: 'Search inventory...',
+                            prefixIcon: const Icon(Icons.search),
+                            contentPadding:
+                                const EdgeInsets.symmetric(vertical: 14),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      FilledButton(
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size(56, 56),
+                          padding: EdgeInsets.zero,
+                        ),
+                        onPressed: () {},
+                        child: const Icon(Icons.add),
+                      ),
+                    ],
                   ),
-                  child: const Icon(Icons.inventory_2_outlined),
-                ),
-                title: Text(
-                  product.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                subtitle: Text('${product.category} - ${product.unit}'),
-                trailing: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: product.isLowStock
-                        ? Theme.of(context).colorScheme.errorContainer
-                        : Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(8),
+                  const SizedBox(height: 16),
+                  const Row(
+                    children: [
+                      _FilterChip('All Items', selected: true),
+                      _FilterChip('Low Stock'),
+                      _FilterChip('Out of Stock'),
+                    ],
                   ),
-                  child: Text(
-                    product.quantity.toStringAsFixed(0),
-                    style: const TextStyle(fontWeight: FontWeight.w800),
-                  ),
-                ),
-              );
-            },
-          );
-        },
-        error: (error, stackTrace) => Center(child: Text(error.toString())),
-        loading: () => const Center(child: CircularProgressIndicator()),
+                  const SizedBox(height: 20),
+                  for (final product in products) ...[
+                    _InventoryTile(product: product),
+                    const SizedBox(height: 12),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
+      bottomNavigationBar: const VaaniBottomNav(current: 'inventory'),
     );
   }
 }
 
-class _InventoryEmptyState extends StatelessWidget {
-  const _InventoryEmptyState();
+class _InventoryTile extends StatelessWidget {
+  const _InventoryTile({required this.product});
+
+  final _ProductUi product;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+    final statusColor = product.healthy
+        ? VaaniTheme.secondary
+        : product.quantity == 0
+            ? Theme.of(context).colorScheme.error
+            : const Color(0xFFB55D00);
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(18),
+      onTap: () => showModalBottomSheet<void>(
+        context: context,
+        showDragHandle: true,
+        builder: (_) => _UpdateStockSheet(product: product),
+      ),
+      child: VaaniCard(
+        padding: const EdgeInsets.all(16),
+        child: Row(
           children: [
             Container(
-              width: 84,
-              height: 84,
+              width: 54,
+              height: 54,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(8),
+                color: statusColor.withValues(alpha: 0.14),
+                borderRadius: BorderRadius.circular(14),
               ),
-              child: Icon(
-                Icons.inventory_2_outlined,
-                size: 42,
-                color: Theme.of(context).colorScheme.primary,
-              ),
+              child: Icon(Icons.inventory_2_outlined, color: statusColor),
             ),
-            const SizedBox(height: 18),
-            Text(
-              'No products yet',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Use voice, barcode scan, or invoice OCR to build your stock list.',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    product.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
+                  const SizedBox(height: 4),
+                  Text(
+                    product.subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: VaaniTheme.onSurfaceVariant,
+                        ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 18),
-            FilledButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.mic),
-              label: const Text('Add by voice'),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '${product.quantity} pcs',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  product.status,
+                  style: TextStyle(
+                    color: statusColor,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
       ),
     );
   }
+}
+
+class _UpdateStockSheet extends StatelessWidget {
+  const _UpdateStockSheet({required this.product});
+
+  final _ProductUi product;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Update Stock', style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 6),
+          Text(product.name, style: Theme.of(context).textTheme.bodyLarge),
+          const SizedBox(height: 28),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              OutlinedButton(
+                onPressed: () {},
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(72, 72),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: const Icon(Icons.remove),
+              ),
+              Text(
+                product.quantity.toString(),
+                style: Theme.of(context).textTheme.displaySmall,
+              ),
+              OutlinedButton(
+                onPressed: () {},
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(72, 72),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(36),
+                  ),
+                ),
+                child: const Icon(Icons.add, color: VaaniTheme.primary),
+              ),
+            ],
+          ),
+          const SizedBox(height: 28),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: FilledButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Save'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FilterChip extends StatelessWidget {
+  const _FilterChip(this.label, {this.selected = false});
+
+  final String label;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: Chip(
+        label: Text(label),
+        backgroundColor: selected ? VaaniTheme.primaryContainer : Colors.white,
+        side: BorderSide(
+          color: selected ? VaaniTheme.primary : const Color(0xFFC7C4D7),
+        ),
+        labelStyle: TextStyle(
+          color: selected ? VaaniTheme.primary : VaaniTheme.onSurface,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+}
+
+class _ProductUi {
+  const _ProductUi(
+    this.name,
+    this.subtitle,
+    this.quantity,
+    this.status,
+    this.healthy,
+  );
+
+  final String name;
+  final String subtitle;
+  final int quantity;
+  final String status;
+  final bool healthy;
 }
