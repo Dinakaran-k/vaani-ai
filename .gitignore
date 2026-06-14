@@ -29,3 +29,6 @@ tools/
 
 # Local design reference exports
 screens/
+
+# Local screenshot previews
+preview/
