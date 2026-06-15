@@ -1,6 +1,6 @@
 # Testing Strategy
 
-Target coverage is greater than 90% for domain, use case, repository adapter, and AI workflow code.
+Target coverage is greater than 90% for domain, use-case, repository-adapter, and AI workflow code.
 
 Required suites:
 
@@ -11,4 +11,4 @@ Required suites:
 - Security rule tests for business membership boundaries.
 - AI workflow tests using recorded schema-valid responses.
 
-The current scaffold includes the first domain and AI intent tests. Emulator and integration suites should be added after Firebase project configuration is generated.
+The current scaffold includes initial domain and AI intent tests. Emulator and integration suites should be added after Firebase project configuration is generated.

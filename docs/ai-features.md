@@ -2,7 +2,7 @@
 
 ## Overview
 
-Vaani AI uses AI to help merchants operate the app through natural language, especially voice commands. The AI layer is designed as a routing and interpretation system: it identifies user intent, returns typed tool-call style results, and lets application code validate and execute the action.
+Vaani AI uses AI to help merchants operate the app through natural language, especially voice commands. The AI layer is designed as a routing and interpretation system: it identifies user intent, returns typed tool-call-style results, and lets application code validate and execute the action.
 
 AI is not allowed to directly mutate inventory, sales, payments, or invoice records. All AI output must pass through deterministic validation, permission checks, and repository methods.
 
@@ -29,7 +29,7 @@ Common commands should be resolved locally before using a remote model. This kee
 
 ### Remote Model Routing
 
-When a command cannot be resolved through local shortcuts, the app can route the transcript to a remote AI provider through a secure backend gateway. The README and architecture expect Gemini and OpenAI access to be brokered through Cloud Functions, not called with secrets embedded in the Flutter app.
+When a command cannot be resolved through local shortcuts, the app can route the transcript to a remote AI provider through a secure backend gateway. Gemini and OpenAI access should be brokered through Cloud Functions, not called with secrets embedded in the Flutter app.
 
 ### Multilingual Voice Assistance
 
@@ -37,7 +37,7 @@ The product targets English, Hindi, Tamil, Telugu, Bengali, Marathi, Kannada, Ma
 
 ### OCR-Assisted Workflows
 
-Invoice scanning uses OCR as a separate capability from AI intent routing. Extracted invoice data should be reviewed by the merchant before it creates or updates inventory records.
+Invoice scanning uses OCR as a separate capability from AI intent routing. Extracted invoice data should be reviewed by the merchant before the app creates or updates inventory records.
 
 ## Safety Rules
 
@@ -61,5 +61,7 @@ Invoice scanning uses OCR as a separate capability from AI intent routing. Extra
 ## Related Files
 
 - [Architecture](architecture.md)
+- [Project summary](project-summary.md)
+- [Problem statement](problem-statement.md)
 - [Testing strategy](testing.md)
 - [DevOps](devops.md)

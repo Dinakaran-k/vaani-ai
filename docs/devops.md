@@ -17,4 +17,4 @@
 
 ## Secret Management
 
-Client apps must not ship provider API keys for OpenAI, Gemini, SMS, WhatsApp, or SMTP. The app calls authenticated Cloud Functions, and the functions read provider credentials from Firebase secret manager.
+Client apps must not ship provider API keys for OpenAI, Gemini, SMS, WhatsApp, or SMTP. The app calls authenticated Cloud Functions, and those functions read provider credentials from Firebase Secret Manager.

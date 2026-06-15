@@ -31,8 +31,8 @@ Feature folders use clean architecture:
 
 Primary documentation:
 
-- [Problem statement](problem-statement.md)
 - [Project summary](project-summary.md)
+- [Problem statement](problem-statement.md)
 - [AI features](ai-features.md)
 - [Architecture](architecture.md)
 - [Testing strategy](testing.md)

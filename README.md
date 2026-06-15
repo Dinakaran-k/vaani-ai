@@ -1,6 +1,6 @@
 # Vaani AI
 
-Vaani AI is a multilingual AI voice assistant for small businesses in India. It is designed to help merchants manage inventory, sales, invoice scanning, and payment reminders through simple voice-first workflows in English, Hindi, Tamil, Telugu, Bengali, Marathi, Kannada, Malayalam, Punjabi, Gujarati, and Hinglish.
+Vaani AI is a multilingual AI voice assistant for small businesses in India. It helps merchants manage inventory, sales, invoice scanning, and payment reminders through simple voice-first workflows in English, Hindi, Tamil, Telugu, Bengali, Marathi, Kannada, Malayalam, Punjabi, Gujarati, and Hinglish.
 
 ## Current Status
 
@@ -22,7 +22,7 @@ Implemented so far:
 - Offline sync queue foundation.
 - Firebase Firestore and Storage security rules.
 - CI workflow for format, analyze, tests, and Firebase rule deployment.
-- Supporting project summary, problem statement, AI features, architecture, testing, project structure, and DevOps documentation.
+- Supporting project summary, problem statement, AI features, architecture, testing strategy, project structure, and DevOps documentation.
 - Starter unit tests for AI intent mapping and inventory stock logic.
 
 Still required before production:
@@ -62,7 +62,7 @@ Onboarding -> Home Dashboard -> Voice Assistant -> Inventory / Scanner / Udhaar 
 | --- |
 | ![Vaani AI settings](docs/assets/readme/07-settings.png) |
 
-## Mobile Interaction Notes
+## Mobile Interaction
 
 - The home dashboard is the daily command center.
 - The `Ask Vaani` action opens a modal voice assistant sheet, so the user does not lose dashboard context.
@@ -115,10 +115,10 @@ docs/                   Project summary, problem statement, AI features, archite
 
 For more detail, see:
 
-- [Architecture](docs/architecture.md)
 - [Project summary](docs/project-summary.md)
 - [Problem statement](docs/problem-statement.md)
 - [AI features](docs/ai-features.md)
+- [Architecture](docs/architecture.md)
 - [Project structure](docs/project-structure.md)
 - [Testing strategy](docs/testing.md)
 - [DevOps](docs/devops.md)

@@ -8,7 +8,7 @@ The product should be delivered as an offline-first Flutter app backed by Fireba
 
 - Voice recognition quality varies by device, noise, accent, and language. Keep deterministic command shortcuts before LLM routing.
 - LLM responses must never directly mutate data. Convert model output into typed tool calls and validate every argument.
-- Firebase keys are public identifiers. Provider secrets, OpenAI keys, Gemini keys, SMS credentials, and WhatsApp tokens must live in Cloud Functions or a server vault.
+- Firebase keys are public identifiers. Provider secrets, OpenAI keys, Gemini keys, SMS credentials, and WhatsApp tokens must live in Cloud Functions or a secure server-side vault.
 - Offline writes need idempotent operation IDs and conflict rules. Last-write-wins is acceptable for profile data, but inventory requires quantity deltas.
 - OCR extraction must be reviewed before inventory creation because GST invoices vary widely.
 
