@@ -79,7 +79,10 @@ class OcrScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
                       FilledButton.icon(
-                        onPressed: () {},
+                        onPressed: () => showVaaniSnackBar(
+                          context,
+                          'Invoice items queued for inventory review',
+                        ),
                         icon: const Icon(Icons.add_business_outlined),
                         label: const Text('Add items to inventory'),
                       ),
@@ -91,7 +94,6 @@ class OcrScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const VaaniBottomNav(current: 'scanner'),
     );
   }
 }

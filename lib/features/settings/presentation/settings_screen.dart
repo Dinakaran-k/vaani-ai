@@ -3,8 +3,18 @@ import 'package:flutter/material.dart';
 import '../../../app/theme.dart';
 import '../../../shared/presentation/vaani_shell.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  var _selectedLanguage = 'English';
+  var _voiceFeedback = true;
+  var _heyVaani = false;
+  var _speechSpeed = 'normal';
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +52,8 @@ class SettingsScreen extends StatelessWidget {
                     ),
                   ),
                   IconButton.filledTonal(
-                    onPressed: () {},
+                    onPressed: () =>
+                        showVaaniSnackBar(context, 'Profile edit is ready'),
                     icon: const Icon(Icons.edit_rounded),
                   ),
                 ],
@@ -54,7 +65,13 @@ class SettingsScreen extends StatelessWidget {
               title: 'App Language',
             ),
             const SizedBox(height: 14),
-            const _LanguageGrid(),
+            _LanguageGrid(
+              selectedLanguage: _selectedLanguage,
+              onSelected: (language) {
+                setState(() => _selectedLanguage = language);
+                showVaaniSnackBar(context, '$language selected');
+              },
+            ),
             const SizedBox(height: 28),
             const _SectionHeader(
               icon: Icons.mic_rounded,
@@ -66,8 +83,9 @@ class SettingsScreen extends StatelessWidget {
               child: Column(
                 children: [
                   SwitchListTile(
-                    value: true,
-                    onChanged: (_) {},
+                    value: _voiceFeedback,
+                    onChanged: (value) =>
+                        setState(() => _voiceFeedback = value),
                     title: const Text('Voice Feedback'),
                     subtitle: const Text('Vaani reads out amounts and actions'),
                   ),
@@ -91,16 +109,18 @@ class SettingsScreen extends StatelessWidget {
                             ),
                             ButtonSegment(value: 'fast', label: Text('Fast')),
                           ],
-                          selected: const {'normal'},
-                          onSelectionChanged: (_) {},
+                          selected: {_speechSpeed},
+                          onSelectionChanged: (value) {
+                            setState(() => _speechSpeed = value.single);
+                          },
                         ),
                       ],
                     ),
                   ),
                   const Divider(height: 1),
                   SwitchListTile(
-                    value: false,
-                    onChanged: (_) {},
+                    value: _heyVaani,
+                    onChanged: (value) => setState(() => _heyVaani = value),
                     title: const Text('"Hey Vaani" Detection'),
                     subtitle: const Text('Activate assistant without tapping'),
                   ),
@@ -116,17 +136,21 @@ class SettingsScreen extends StatelessWidget {
             VaaniCard(
               padding: EdgeInsets.zero,
               child: Column(
-                children: const [
+                children: [
                   ListTile(
-                    leading: CircleAvatar(child: Icon(Icons.play_arrow)),
-                    title: Text('Watch Tutorial'),
-                    trailing: Icon(Icons.chevron_right),
+                    onTap: () => showVaaniSnackBar(context, 'Opening tutorial'),
+                    leading: const CircleAvatar(child: Icon(Icons.play_arrow)),
+                    title: const Text('Watch Tutorial'),
+                    trailing: const Icon(Icons.chevron_right),
                   ),
-                  Divider(height: 1),
+                  const Divider(height: 1),
                   ListTile(
-                    leading: CircleAvatar(child: Icon(Icons.support_agent)),
-                    title: Text('Contact Support'),
-                    trailing: Icon(Icons.chevron_right),
+                    onTap: () =>
+                        showVaaniSnackBar(context, 'Support chat is ready'),
+                    leading:
+                        const CircleAvatar(child: Icon(Icons.support_agent)),
+                    title: const Text('Contact Support'),
+                    trailing: const Icon(Icons.chevron_right),
                   ),
                 ],
               ),
@@ -134,7 +158,6 @@ class SettingsScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const VaaniBottomNav(current: 'settings'),
     );
   }
 }
@@ -165,15 +188,21 @@ class _SectionHeader extends StatelessWidget {
 }
 
 class _LanguageGrid extends StatelessWidget {
-  const _LanguageGrid();
+  const _LanguageGrid({
+    required this.selectedLanguage,
+    required this.onSelected,
+  });
+
+  final String selectedLanguage;
+  final ValueChanged<String> onSelected;
 
   @override
   Widget build(BuildContext context) {
     const languages = [
-      ('English', 'Default', true),
-      ('Hindi', 'Hindi', false),
-      ('Marathi', 'Marathi', false),
-      ('Gujarati', 'Gujarati', false),
+      ('English', 'Default'),
+      ('Hindi', 'Hindi'),
+      ('Marathi', 'Marathi'),
+      ('Gujarati', 'Gujarati'),
     ];
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -188,7 +217,8 @@ class _LanguageGrid extends StatelessWidget {
                 child: _LanguageTile(
                   title: language.$1,
                   subtitle: language.$2,
-                  selected: language.$3,
+                  selected: language.$1 == selectedLanguage,
+                  onTap: () => onSelected(language.$1),
                 ),
               ),
           ],
@@ -203,49 +233,58 @@ class _LanguageTile extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.selected,
+    required this.onTap,
   });
 
   final String title;
   final String subtitle;
   final bool selected;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: selected ? VaaniTheme.primaryContainer : Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: selected ? VaaniTheme.primary : const Color(0xFFC7C4D7),
-          width: selected ? 2 : 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return Material(
+      color: selected ? VaaniTheme.primaryContainer : Colors.white,
+      borderRadius: BorderRadius.circular(18),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: selected ? VaaniTheme.primary : const Color(0xFFC7C4D7),
+              width: selected ? 2 : 1,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                  ),
+                  if (selected)
+                    const Icon(Icons.check_circle, color: VaaniTheme.primary),
+                ],
               ),
-              if (selected)
-                const Icon(Icons.check_circle, color: VaaniTheme.primary),
+              const SizedBox(height: 6),
+              Text(
+                subtitle,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: VaaniTheme.onSurfaceVariant,
+                    ),
+              ),
             ],
           ),
-          const SizedBox(height: 6),
-          Text(
-            subtitle,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: VaaniTheme.onSurfaceVariant,
-                ),
-          ),
-        ],
+        ),
       ),
     );
   }

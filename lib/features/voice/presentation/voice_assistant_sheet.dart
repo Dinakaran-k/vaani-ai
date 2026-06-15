@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../app/theme.dart';
 import '../../../shared/presentation/vaani_motion.dart';
+import '../../../shared/presentation/vaani_shell.dart';
 
 Future<void> showVoiceAssistantSheet(BuildContext context) {
   return showModalBottomSheet<void>(
@@ -74,7 +75,10 @@ class _VoiceAssistantSheetState extends State<_VoiceAssistantSheet> {
                   ),
                   const Spacer(),
                   IconButton.filledTonal(
-                    onPressed: () {},
+                    onPressed: () => showVaaniSnackBar(
+                      context,
+                      'Language selector is ready',
+                    ),
                     icon: const Icon(Icons.language_rounded),
                   ),
                 ],
@@ -121,11 +125,23 @@ class _VoiceAssistantSheetState extends State<_VoiceAssistantSheet> {
                 alignment: WrapAlignment.center,
                 spacing: 10,
                 runSpacing: 10,
-                children: const [
-                  _SuggestionChip('Add 20 bags rice'),
-                  _SuggestionChip('Show sales today'),
-                  _SuggestionChip('Pending payments'),
-                  _SuggestionChip('Low stock items'),
+                children: [
+                  _SuggestionChip(
+                    'Add 20 bags rice',
+                    onTap: () => _useSuggestion('Add 20 bags rice'),
+                  ),
+                  _SuggestionChip(
+                    'Show sales today',
+                    onTap: () => _useSuggestion('Show sales today'),
+                  ),
+                  _SuggestionChip(
+                    'Pending payments',
+                    onTap: () => _useSuggestion('Pending payments'),
+                  ),
+                  _SuggestionChip(
+                    'Low stock items',
+                    onTap: () => _useSuggestion('Low stock items'),
+                  ),
                 ],
               ),
             ],
@@ -134,23 +150,30 @@ class _VoiceAssistantSheetState extends State<_VoiceAssistantSheet> {
       ),
     );
   }
+
+  void _useSuggestion(String text) {
+    setState(() => _listening = false);
+    showVaaniSnackBar(context, 'Command selected: $text');
+  }
 }
 
 class _SuggestionChip extends StatelessWidget {
-  const _SuggestionChip(this.text);
+  const _SuggestionChip(this.text, {required this.onTap});
 
   final String text;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
+    return ActionChip(
+      label: Text(text),
+      onPressed: onTap,
+      backgroundColor: Colors.white,
+      side: const BorderSide(color: Color(0xFFC7C4D7)),
+      labelStyle: const TextStyle(fontWeight: FontWeight.w700),
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: const Color(0xFFC7C4D7)),
       ),
-      child: Text(text, style: const TextStyle(fontWeight: FontWeight.w700)),
     );
   }
 }

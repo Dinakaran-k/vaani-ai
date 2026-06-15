@@ -38,12 +38,12 @@ class VaaniAppHeader extends StatelessWidget {
           if (showSearch)
             IconButton(
               tooltip: 'Search',
-              onPressed: () {},
+              onPressed: () => showVaaniSnackBar(context, 'Search is ready'),
               icon: const Icon(Icons.search),
             ),
           IconButton(
             tooltip: 'Notifications',
-            onPressed: () {},
+            onPressed: () => showVaaniSnackBar(context, 'No new notifications'),
             icon: const Badge(
               smallSize: 8,
               child: Icon(Icons.notifications_none_rounded),
@@ -120,116 +120,140 @@ class VaaniCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: padding,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE2E0EE)),
-        boxShadow: [
-          BoxShadow(
-            color: VaaniTheme.primary.withValues(alpha: 0.06),
-            blurRadius: 24,
-            offset: const Offset(0, 10),
-          ),
-        ],
+    return Material(
+      color: color,
+      borderRadius: BorderRadius.circular(20),
+      clipBehavior: Clip.antiAlias,
+      child: Container(
+        padding: padding,
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color(0xFFE2E0EE)),
+          boxShadow: [
+            BoxShadow(
+              color: VaaniTheme.primary.withValues(alpha: 0.06),
+              blurRadius: 24,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: child,
       ),
-      child: child,
+    );
+  }
+}
+
+class VaaniTabShell extends StatelessWidget {
+  const VaaniTabShell({super.key, required this.navigationShell});
+
+  final StatefulNavigationShell navigationShell;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: navigationShell,
+      bottomNavigationBar: VaaniBottomNav(
+        currentIndex: navigationShell.currentIndex,
+        onDestinationSelected: (index) {
+          navigationShell.goBranch(
+            index,
+            initialLocation: index == navigationShell.currentIndex,
+          );
+        },
+      ),
     );
   }
 }
 
 class VaaniBottomNav extends StatelessWidget {
-  const VaaniBottomNav({super.key, required this.current});
+  const VaaniBottomNav({
+    super.key,
+    this.current,
+    this.currentIndex,
+    this.onDestinationSelected,
+  });
 
-  final String current;
+  final String? current;
+  final int? currentIndex;
+  final ValueChanged<int>? onDestinationSelected;
 
   @override
   Widget build(BuildContext context) {
     final items = [
-      _NavSpec('home', Icons.home_rounded, 'Home', '/home'),
-      _NavSpec('inventory', Icons.inventory_2_outlined, 'Stock', '/inventory'),
-      _NavSpec('voice', Icons.graphic_eq, 'Voice', '/voice'),
-      _NavSpec('scanner', Icons.document_scanner_outlined, 'Scanner', '/ocr'),
-      _NavSpec('settings', Icons.settings_rounded, 'Settings', '/settings'),
+      _NavSpec(
+        'home',
+        Icons.home_outlined,
+        Icons.home_rounded,
+        'Home',
+        '/home',
+      ),
+      _NavSpec(
+        'inventory',
+        Icons.inventory_2_outlined,
+        Icons.inventory_2_rounded,
+        'Stock',
+        '/inventory',
+      ),
+      _NavSpec(
+        'voice',
+        Icons.graphic_eq,
+        Icons.graphic_eq,
+        'Voice',
+        '/voice',
+      ),
+      _NavSpec(
+        'scanner',
+        Icons.document_scanner_outlined,
+        Icons.document_scanner_rounded,
+        'Scanner',
+        '/ocr',
+      ),
+      _NavSpec(
+        'settings',
+        Icons.settings_outlined,
+        Icons.settings_rounded,
+        'Settings',
+        '/settings',
+      ),
     ];
 
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Color(0xFFE4E1ED))),
-      ),
-      padding: const EdgeInsets.fromLTRB(8, 8, 8, 10),
-      child: SafeArea(
-        top: false,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            for (final item in items)
-              Expanded(
-                child: _BottomNavItem(
-                  item: item,
-                  selected: current == item.id,
-                  onTap: () => context.go(item.route),
-                ),
-              ),
-          ],
-        ),
-      ),
+    final rawIndex =
+        currentIndex ?? items.indexWhere((item) => item.id == current);
+    final selectedIndex = rawIndex.clamp(0, items.length - 1);
+
+    return NavigationBar(
+      selectedIndex: selectedIndex,
+      onDestinationSelected: (index) {
+        final callback = onDestinationSelected;
+        if (callback != null) {
+          callback(index);
+          return;
+        }
+        if (index != selectedIndex) context.go(items[index].route);
+      },
+      destinations: [
+        for (final item in items)
+          NavigationDestination(
+            icon: Icon(item.icon),
+            selectedIcon: Icon(item.selectedIcon),
+            label: item.label,
+          ),
+      ],
     );
   }
 }
 
-class _BottomNavItem extends StatelessWidget {
-  const _BottomNavItem({
-    required this.item,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final _NavSpec item;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(18),
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-              decoration: BoxDecoration(
-                color: selected ? VaaniTheme.primaryContainer : null,
-                borderRadius: BorderRadius.circular(18),
-              ),
-              child: Icon(
-                item.icon,
-                size: 22,
-                color: selected ? VaaniTheme.primary : const Color(0xFF767586),
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              item.label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
-                color: selected ? VaaniTheme.primary : const Color(0xFF767586),
-              ),
-            ),
-          ],
+void showVaaniSnackBar(BuildContext context, String message) {
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        content: Text(message),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
         ),
       ),
     );
-  }
 }
 
 class VaaniSectionTitle extends StatelessWidget {
@@ -252,10 +276,11 @@ class VaaniSectionTitle extends StatelessWidget {
 }
 
 class _NavSpec {
-  const _NavSpec(this.id, this.icon, this.label, this.route);
+  const _NavSpec(this.id, this.icon, this.selectedIcon, this.label, this.route);
 
   final String id;
   final IconData icon;
+  final IconData selectedIcon;
   final String label;
   final String route;
 }

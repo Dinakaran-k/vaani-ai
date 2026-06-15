@@ -243,7 +243,10 @@ class _DueCard extends StatelessWidget {
                 ),
               ),
               FilledButton.icon(
-                onPressed: () {},
+                onPressed: () => showVaaniSnackBar(
+                  context,
+                  'Reminder prepared for $name',
+                ),
                 icon: const Icon(Icons.message_outlined),
                 label: const Text('Remind'),
               ),

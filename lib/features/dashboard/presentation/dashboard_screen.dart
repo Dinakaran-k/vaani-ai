@@ -74,7 +74,6 @@ class DashboardScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const VaaniBottomNav(current: 'home'),
     );
   }
 }
