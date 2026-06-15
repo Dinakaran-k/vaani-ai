@@ -151,7 +151,14 @@ class _SectionHeader extends StatelessWidget {
       children: [
         Icon(icon, color: VaaniTheme.primary),
         const SizedBox(width: 10),
-        Text(title, style: Theme.of(context).textTheme.titleLarge),
+        Expanded(
+          child: Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
       ],
     );
   }

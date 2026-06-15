@@ -46,11 +46,15 @@ class OcrScreen extends StatelessWidget {
                       const SizedBox(height: 20),
                       Row(
                         children: [
-                          Text(
-                            'Invoice Details',
-                            style: Theme.of(context).textTheme.titleLarge,
+                          Expanded(
+                            child: Text(
+                              'Invoice Details',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
                           ),
-                          const Spacer(),
+                          const SizedBox(width: 12),
                           const Chip(
                             label: Text('AI Scanned'),
                             avatar: Icon(Icons.bolt, size: 18),

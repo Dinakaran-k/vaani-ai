@@ -57,12 +57,15 @@ class InventoryScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  const Row(
-                    children: [
-                      _FilterChip('All Items', selected: true),
-                      _FilterChip('Low Stock'),
-                      _FilterChip('Out of Stock'),
-                    ],
+                  const SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _FilterChip('All Items', selected: true),
+                        _FilterChip('Low Stock'),
+                        _FilterChip('Out of Stock'),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 20),
                   for (final product in products) ...[

@@ -16,4 +16,24 @@ void main() {
 
     expect(product.isLowStock, isTrue);
   });
+
+  test('copyWith updates quantity without losing identity', () {
+    final product = Product(
+      id: 'p1',
+      businessId: 'b1',
+      name: 'Rice',
+      category: 'Grains',
+      quantity: 10,
+      unit: 'bags',
+      lowStockThreshold: 5,
+      updatedAt: DateTime.utc(2026),
+    );
+
+    final updated = product.copyWith(quantity: 12);
+
+    expect(updated.id, 'p1');
+    expect(updated.businessId, 'b1');
+    expect(updated.quantity, 12);
+    expect(updated.name, 'Rice');
+  });
 }

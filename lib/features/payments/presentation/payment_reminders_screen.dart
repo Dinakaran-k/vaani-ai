@@ -29,19 +29,27 @@ class PaymentRemindersScreen extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(
-                        'Rs 45,200',
-                        style: Theme.of(context).textTheme.displaySmall,
+                      Flexible(
+                        child: Text(
+                          'Rs 45,200',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.displaySmall,
+                        ),
                       ),
                       const SizedBox(width: 8),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 5),
-                        child: Text(
-                          'from 12 customers',
-                          style:
-                              Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: VaaniTheme.onSurfaceVariant,
-                                  ),
+                      Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 5),
+                          child: Text(
+                            'from 12 customers',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style:
+                                Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      color: VaaniTheme.onSurfaceVariant,
+                                    ),
+                          ),
                         ),
                       ),
                     ],
@@ -77,12 +85,15 @@ class PaymentRemindersScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 18),
-            const Row(
-              children: [
-                _DueFilter('All Dues (12)', selected: true),
-                _DueFilter('Overdue (4)'),
-                _DueFilter('Recent (8)'),
-              ],
+            const SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _DueFilter('All Dues (12)', selected: true),
+                  _DueFilter('Overdue (4)'),
+                  _DueFilter('Recent (8)'),
+                ],
+              ),
             ),
             const SizedBox(height: 18),
             const _DueCard(
@@ -179,17 +190,17 @@ class _DueCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 6,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        Flexible(
-                          child: Text(
-                            name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
+                        Text(
+                          name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
-                        const SizedBox(width: 8),
                         Chip(
                           visualDensity: VisualDensity.compact,
                           label: Text(status),
@@ -207,9 +218,14 @@ class _DueCard extends StatelessWidget {
             ],
           ),
           const Divider(height: 28),
-          Row(
+          Wrap(
+            spacing: 14,
+            runSpacing: 12,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            alignment: WrapAlignment.spaceBetween,
             children: [
-              Expanded(
+              SizedBox(
+                width: 150,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
