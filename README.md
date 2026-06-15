@@ -22,7 +22,7 @@ Implemented so far:
 - Offline sync queue foundation.
 - Firebase Firestore and Storage security rules.
 - CI workflow for format, analyze, tests, and Firebase rule deployment.
-- Architecture, testing, project structure, and DevOps documentation.
+- Problem statement, AI features, architecture, testing, project structure, and DevOps documentation.
 - Starter unit tests for AI intent mapping and inventory stock logic.
 
 Still required before production:
@@ -110,12 +110,14 @@ lib/
     sales/              Sale model and sales screen shell.
     voice/              Device speech and TTS engine.
 test/                   Unit tests.
-docs/                   Architecture, DevOps, testing, and structure docs.
+docs/                   Problem statement, AI features, architecture, DevOps, testing, and structure docs.
 ```
 
 For more detail, see:
 
 - [Architecture](docs/architecture.md)
+- [Problem statement](docs/problem-statement.md)
+- [AI features](docs/ai-features.md)
 - [Project structure](docs/project-structure.md)
 - [Testing strategy](docs/testing.md)
 - [DevOps](docs/devops.md)

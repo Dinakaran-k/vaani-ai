@@ -19,7 +19,7 @@ lib/
     sales/              Transactions, reports, export models.
     voice/              Speech-to-text and text-to-speech engines.
 test/                   Unit and workflow tests.
-docs/                   Architecture, schemas, risks, and release guidance.
+docs/                   Problem statement, AI features, architecture, schemas, risks, and release guidance.
 ```
 
 Feature folders use clean architecture:
@@ -28,3 +28,11 @@ Feature folders use clean architecture:
 - `data`: Firebase, local database, network, and device integrations.
 - `application`: Riverpod providers and use cases.
 - `presentation`: Flutter screens and widgets.
+
+Primary documentation:
+
+- [Problem statement](problem-statement.md)
+- [AI features](ai-features.md)
+- [Architecture](architecture.md)
+- [Testing strategy](testing.md)
+- [DevOps](devops.md)
