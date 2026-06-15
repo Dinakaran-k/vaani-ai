@@ -9,6 +9,8 @@ This repository is a production-oriented Flutter/Firebase foundation, not a comp
 Implemented so far:
 
 - Flutter app scaffold with Material 3 UI.
+- Branded Vaani AI app icon, web favicon, and in-app brand mark.
+- Stitch-inspired mobile UI flow with animated onboarding, dashboard, voice, inventory, scanner, payments, and settings screens.
 - Feature-first clean architecture structure.
 - Riverpod dependency wiring.
 - GoRouter navigation.
@@ -35,6 +37,38 @@ Still required before production:
 - App Check, Crashlytics, Analytics dashboards, release signing, and monitoring.
 - Emulator-backed Firebase security rule tests.
 - Integration tests and broader widget coverage.
+
+## Visual Flow
+
+The current app flow is designed around a mobile-first merchant journey:
+
+```text
+Onboarding -> Home Dashboard -> Voice Assistant -> Inventory / Scanner / Udhaar / Settings
+```
+
+| Onboarding | Home Dashboard |
+| --- | --- |
+| ![Vaani AI onboarding](docs/assets/readme/01-onboarding.png) | ![Vaani AI home dashboard](docs/assets/readme/02-home.png) |
+
+| Voice Assistant | Inventory |
+| --- | --- |
+| ![Vaani AI voice assistant](docs/assets/readme/03-voice.png) | ![Vaani AI inventory](docs/assets/readme/04-inventory.png) |
+
+| Invoice Scanner | Udhaar Reminders |
+| --- | --- |
+| ![Vaani AI invoice scanner](docs/assets/readme/05-scanner.png) | ![Vaani AI payment reminders](docs/assets/readme/06-payments.png) |
+
+| Settings |
+| --- |
+| ![Vaani AI settings](docs/assets/readme/07-settings.png) |
+
+## Mobile Interaction Notes
+
+- The home dashboard is the daily command center.
+- The `Ask Vaani` action opens a modal voice assistant sheet, so the user does not lose dashboard context.
+- Bottom navigation provides quick movement between home, stock, voice, scanner, and settings.
+- Inventory stock updates use a bottom sheet pattern for quick in-place edits.
+- The scanner screen uses an animated scan preview and review sheet before inventory creation.
 
 ## Tech Stack
 
