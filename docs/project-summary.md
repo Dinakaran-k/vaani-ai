@@ -66,7 +66,7 @@ Vaani AI uses AI for natural language interpretation, not uncontrolled data muta
 
 ## Current Status
 
-The repository currently provides a production-oriented foundation rather than a complete production app. It includes core app structure, UI flow, data models, Firebase-ready repositories, AI and voice abstractions, sync foundations, documentation, and starter tests.
+The repository currently provides a production-oriented foundation rather than a complete production app. It includes core app structure, Android platform scaffolding, UI flow, data models, Firebase-ready repositories, AI and voice abstractions, sync foundations, documentation, and starter tests.
 
 ## Remaining Work
 

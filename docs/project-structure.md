@@ -18,6 +18,7 @@ lib/
     payments/           Reminder scheduling and communication channels.
     sales/              Transactions, reports, export models.
     voice/              Speech-to-text and text-to-speech engines.
+android/                Android platform shell, manifests, Gradle config, wrapper, and launch assets.
 test/                   Unit and workflow tests.
 docs/                   Project summary, problem statement, AI features, architecture, schemas, risks, and release guidance.
 ```

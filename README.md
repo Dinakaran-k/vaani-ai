@@ -9,6 +9,7 @@ This repository is a production-oriented Flutter/Firebase foundation, not a comp
 Implemented so far:
 
 - Flutter app scaffold with Material 3 UI.
+- Android platform project scaffold for debug builds and device installs.
 - Branded Vaani AI app icon, web favicon, and in-app brand mark.
 - Stitch-inspired mobile UI flow with animated onboarding, dashboard, voice, inventory, scanner, payments, and settings screens.
 - Feature-first clean architecture structure.
@@ -109,6 +110,7 @@ lib/
     payments/           Payment reminder model and screen shell.
     sales/              Sale model and sales screen shell.
     voice/              Device speech and TTS engine.
+android/                Android app shell, manifests, Gradle config, and launch assets.
 test/                   Unit tests.
 docs/                   Project summary, problem statement, AI features, architecture, DevOps, testing, and structure docs.
 ```
@@ -149,6 +151,26 @@ Run the app:
 flutter run
 ```
 
+Run on a specific Android device:
+
+```bash
+flutter devices
+flutter run -d <device-id>
+```
+
+Build a debug Android APK:
+
+```bash
+flutter build apk --debug
+```
+
+If `flutter run` builds successfully but hangs while attaching to a connected device, install and launch the debug APK directly:
+
+```bash
+adb -s <device-id> install -r build/app/outputs/flutter-apk/app-debug.apk
+adb -s <device-id> shell monkey -p com.vaani.ai -c android.intent.category.LAUNCHER 1
+```
+
 ## Firebase Setup
 
 1. Create separate Firebase projects for development, staging, and production.
@@ -187,6 +209,8 @@ Last verified locally:
 dart format lib test
 flutter analyze
 flutter test
+flutter build apk --debug
+adb install and launch on I2305 Android device
 ```
 
 Result:
@@ -194,6 +218,7 @@ Result:
 ```text
 No analyzer issues.
 All tests passed.
+Debug APK built, installed, and launched on a connected Android device.
 ```
 
 ## License
