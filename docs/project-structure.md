@@ -19,7 +19,7 @@ lib/
     sales/              Transactions, reports, export models.
     voice/              Speech-to-text and text-to-speech engines.
 test/                   Unit and workflow tests.
-docs/                   Problem statement, AI features, architecture, schemas, risks, and release guidance.
+docs/                   Project summary, problem statement, AI features, architecture, schemas, risks, and release guidance.
 ```
 
 Feature folders use clean architecture:
@@ -32,6 +32,7 @@ Feature folders use clean architecture:
 Primary documentation:
 
 - [Problem statement](problem-statement.md)
+- [Project summary](project-summary.md)
 - [AI features](ai-features.md)
 - [Architecture](architecture.md)
 - [Testing strategy](testing.md)
