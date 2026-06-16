@@ -186,8 +186,8 @@ void main() {
 
       expect(find.text('Udhaar Reminders'), findsOneWidget);
       expect(find.text('TOTAL PENDING DUES'), findsOneWidget);
-      expect(find.text('Rs 45,200'), findsOneWidget);
-      expect(find.text('All Dues (12)'), findsOneWidget);
+      expect(find.text('Rs 11,500'), findsOneWidget);
+      expect(find.text('All Dues (3)'), findsOneWidget);
       expect(find.text('Rajesh Kumar'), findsOneWidget);
       expect(find.text('Remind'), findsWidgets);
     });

@@ -165,16 +165,25 @@ class _InventoryScreenState extends State<InventoryScreen> {
   }
 
   Future<void> _showAddProductSheet() async {
+    final nameController = TextEditingController();
+    final categoryController = TextEditingController();
+    final quantityController = TextEditingController(text: '1');
     await showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
+      isScrollControlled: true,
       backgroundColor: VaaniTheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (context) {
         return Padding(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
+          padding: EdgeInsets.fromLTRB(
+            24,
+            8,
+            24,
+            28 + MediaQuery.viewInsetsOf(context).bottom,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,26 +193,78 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 12),
-              Text(
-                'Product creation is ready for the inventory form flow.',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: VaaniTheme.onSurfaceVariant,
-                    ),
+              TextField(
+                controller: nameController,
+                autofocus: true,
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(
+                  labelText: 'Product name',
+                  prefixIcon: Icon(Icons.inventory_2_outlined),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: categoryController,
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(
+                  labelText: 'Category',
+                  prefixIcon: Icon(Icons.category_outlined),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: quantityController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Opening quantity',
+                  prefixIcon: Icon(Icons.add_box_outlined),
+                ),
               ),
               const SizedBox(height: 20),
               FilledButton.icon(
                 onPressed: () {
+                  final name = nameController.text.trim();
+                  final category = categoryController.text.trim();
+                  final quantity =
+                      int.tryParse(quantityController.text.trim()) ?? 0;
+                  if (name.isEmpty || quantity < 0) {
+                    showVaaniSnackBar(
+                      context,
+                      'Add a product name and valid quantity',
+                    );
+                    return;
+                  }
+                  setState(() {
+                    _products.insert(
+                      0,
+                      _ProductUi(
+                        name,
+                        category.isEmpty ? 'General stock' : category,
+                        quantity,
+                        quantity == 0
+                            ? 'out of stock'
+                            : quantity < 8
+                                ? 'low stock'
+                                : 'in stock',
+                        quantity >= 8,
+                      ),
+                    );
+                  });
                   Navigator.of(context).pop();
-                  showVaaniSnackBar(context, 'Product form opened');
+                  showVaaniSnackBar(context, '$name added to inventory');
                 },
                 icon: const Icon(Icons.add),
-                label: const Text('Continue'),
+                label: const Text('Add product'),
               ),
             ],
           ),
         );
       },
-    );
+    ).whenComplete(() {
+      nameController.dispose();
+      categoryController.dispose();
+      quantityController.dispose();
+    });
   }
 }
 

@@ -29,9 +29,9 @@ Small merchants often manage business operations through paper notes, spreadshee
 - Dashboard for daily business status and quick actions.
 - Voice assistant entrypoint with speech-to-text and text-to-speech abstractions.
 - AI intent classification with deterministic shortcuts and remote AI client wrappers.
-- Inventory domain model, Firestore repository, and stock update workflows with local preview interactions.
+- Inventory domain model, Firestore repository, search, filters, add-product flow, and stock update workflows with local interactions.
 - Camera-first invoice scanner UI, OCR review selection, and OCR result model.
-- Payment reminder model and Udhaar reminder screen foundation.
+- Payment reminder model, filters, due detail sheet, and reminder state updates.
 - Sales domain model, analytics period filters, sale draft action, and tappable product insights.
 - Offline sync queue foundation.
 - Firebase security rules and indexes.
@@ -66,13 +66,13 @@ Vaani AI uses AI for natural language interpretation, not uncontrolled data muta
 
 ## Current Status
 
-The repository currently provides a production-oriented foundation rather than a complete production app. It includes core app structure, Android platform scaffolding, interactive UI flows, data models, Firebase-ready repositories, AI and voice abstractions, camera scanner preview, sync foundations, documentation, and starter tests.
+The repository currently provides a production-oriented foundation rather than a complete production app. It includes core app structure, Android platform scaffolding, interactive UI flows, data models, Firebase-ready repositories, AI and voice abstractions, camera scanner preview, local payment and inventory interactions, sync foundations, documentation, and starter tests.
 
 ## Remaining Work
 
 - Complete Firebase setup with FlutterFire CLI.
 - Connect login preview flows to production OTP delivery and OAuth providers.
-- Persist full inventory CRUD and local SQLite storage.
+- Persist inventory CRUD, payment reminders, and local SQLite storage beyond current local UI state.
 - Persist complete sales workflows, reports, PDF export, and Excel export.
 - Connect live OCR text extraction, invoice parsing, GST validation, and review persistence.
 - Add a Cloud Functions gateway for AI, WhatsApp, SMS, email, and provider secrets.

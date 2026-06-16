@@ -13,9 +13,9 @@ lib/
     ai/                 Intent classification and AI tool routing.
     auth/               Email, Google, and phone OTP authentication UI.
     dashboard/          KPIs, charts, insights, and voice entrypoint.
-    inventory/          Product CRUD, stock updates, low-stock alerts.
+    inventory/          Product CRUD UI, stock updates, search, filters, low-stock alerts.
     ocr/                Camera scanner UI, invoice scan models, and OCR workflow.
-    payments/           Reminder scheduling and communication channels.
+    payments/           Reminder filters, local reminder state, scheduling, communication channels.
     sales/              Analytics UI, transaction drafts, reports, export models.
     voice/              Speech-to-text and text-to-speech engines.
 android/                Android platform shell, manifests, Gradle config, wrapper, and launch assets.

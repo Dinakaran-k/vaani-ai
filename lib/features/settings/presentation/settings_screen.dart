@@ -52,8 +52,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                   IconButton.filledTonal(
-                    onPressed: () =>
-                        showVaaniSnackBar(context, 'Profile edit is ready'),
+                    onPressed: _showProfileSheet,
                     icon: const Icon(Icons.edit_rounded),
                   ),
                 ],
@@ -138,15 +137,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 children: [
                   ListTile(
-                    onTap: () => showVaaniSnackBar(context, 'Opening tutorial'),
+                    onTap: _showTutorialSheet,
                     leading: const CircleAvatar(child: Icon(Icons.play_arrow)),
                     title: const Text('Watch Tutorial'),
                     trailing: const Icon(Icons.chevron_right),
                   ),
                   const Divider(height: 1),
                   ListTile(
-                    onTap: () =>
-                        showVaaniSnackBar(context, 'Support chat is ready'),
+                    onTap: _showSupportSheet,
                     leading:
                         const CircleAvatar(child: Icon(Icons.support_agent)),
                     title: const Text('Contact Support'),
@@ -157,6 +155,176 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Future<void> _showProfileSheet() {
+    final ownerController = TextEditingController(text: 'Rajesh Kumar');
+    final shopController = TextEditingController(text: 'Kumar Provisions');
+    return showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      backgroundColor: VaaniTheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+            24,
+            8,
+            24,
+            28 + MediaQuery.viewInsetsOf(context).bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Edit Profile',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 14),
+              TextField(
+                controller: ownerController,
+                decoration: const InputDecoration(
+                  labelText: 'Owner name',
+                  prefixIcon: Icon(Icons.person_outline),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: shopController,
+                decoration: const InputDecoration(
+                  labelText: 'Business name',
+                  prefixIcon: Icon(Icons.storefront_outlined),
+                ),
+              ),
+              const SizedBox(height: 20),
+              FilledButton.icon(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  showVaaniSnackBar(context, 'Profile saved locally');
+                },
+                icon: const Icon(Icons.save_outlined),
+                label: const Text('Save profile'),
+              ),
+            ],
+          ),
+        );
+      },
+    ).whenComplete(() {
+      ownerController.dispose();
+      shopController.dispose();
+    });
+  }
+
+  Future<void> _showTutorialSheet() {
+    return showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      backgroundColor: VaaniTheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Quick Tutorial',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 14),
+              const _TutorialStep(
+                '1',
+                'Use Voice to update stock or ask for reports.',
+              ),
+              const _TutorialStep(
+                '2',
+                'Scan invoices, review extracted items, then add them.',
+              ),
+              const _TutorialStep(
+                '3',
+                'Track Udhaar and prepare reminders from Payments.',
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showSupportSheet() {
+    return showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      backgroundColor: VaaniTheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Contact Support',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 14),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const CircleAvatar(child: Icon(Icons.chat_outlined)),
+                title: const Text('Start support chat'),
+                subtitle: const Text('Usually replies within one business day'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  showVaaniSnackBar(context, 'Support chat started');
+                },
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const CircleAvatar(child: Icon(Icons.mail_outline)),
+                title: const Text('Email support'),
+                subtitle: const Text('support@vaani.ai'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  showVaaniSnackBar(context, 'Support email prepared');
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _TutorialStep extends StatelessWidget {
+  const _TutorialStep(this.number, this.text);
+
+  final String number;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CircleAvatar(radius: 15, child: Text(number)),
+          const SizedBox(width: 12),
+          Expanded(child: Text(text)),
+        ],
       ),
     );
   }

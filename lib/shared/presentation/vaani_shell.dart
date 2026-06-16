@@ -38,7 +38,7 @@ class VaaniAppHeader extends StatelessWidget {
           if (showSearch)
             IconButton(
               tooltip: 'Search',
-              onPressed: () => showVaaniSnackBar(context, 'Search is ready'),
+              onPressed: () => showVaaniSearchSheet(context),
               icon: const Icon(Icons.search),
             ),
           IconButton(
@@ -242,6 +242,67 @@ class VaaniBottomNav extends StatelessWidget {
   }
 }
 
+Future<void> showVaaniSearchSheet(BuildContext context) {
+  final controller = TextEditingController();
+  return showModalBottomSheet<void>(
+    context: context,
+    showDragHandle: true,
+    isScrollControlled: true,
+    backgroundColor: VaaniTheme.surface,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+    ),
+    builder: (context) {
+      final suggestions = [
+        ('Low stock items', Icons.inventory_2_outlined, '/inventory'),
+        ('Scan invoice', Icons.document_scanner_outlined, '/ocr'),
+        ('Open voice assistant', Icons.graphic_eq, '/voice'),
+        ('Settings', Icons.settings_outlined, '/settings'),
+      ];
+      return Padding(
+        padding: EdgeInsets.fromLTRB(
+          24,
+          8,
+          24,
+          24 + MediaQuery.viewInsetsOf(context).bottom,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Search Vaani', style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 14),
+            TextField(
+              controller: controller,
+              autofocus: true,
+              decoration: const InputDecoration(
+                hintText: 'Search stock, scanner, settings...',
+                prefixIcon: Icon(Icons.search_rounded),
+              ),
+              onSubmitted: (value) {
+                Navigator.of(context).pop();
+                showVaaniSnackBar(context, 'Searching for "$value"');
+              },
+            ),
+            const SizedBox(height: 18),
+            for (final suggestion in suggestions)
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: CircleAvatar(child: Icon(suggestion.$2)),
+                title: Text(suggestion.$1),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  context.go(suggestion.$3);
+                },
+              ),
+          ],
+        ),
+      );
+    },
+  ).whenComplete(controller.dispose);
+}
+
 void showVaaniSnackBar(BuildContext context, String message) {
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
@@ -254,6 +315,58 @@ void showVaaniSnackBar(BuildContext context, String message) {
         ),
       ),
     );
+}
+
+Future<void> showVaaniLanguageSheet(BuildContext context) {
+  const languages = [
+    ('English', 'Default'),
+    ('Hindi', 'Hindi'),
+    ('Tamil', 'Tamil'),
+    ('Telugu', 'Telugu'),
+    ('Marathi', 'Marathi'),
+    ('Gujarati', 'Gujarati'),
+  ];
+  return showModalBottomSheet<void>(
+    context: context,
+    showDragHandle: true,
+    backgroundColor: VaaniTheme.surface,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+    ),
+    builder: (context) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Voice Language',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 12),
+            for (final language in languages)
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: CircleAvatar(
+                  backgroundColor: VaaniTheme.primaryContainer,
+                  child: Text(language.$1.characters.first),
+                ),
+                title: Text(language.$1),
+                subtitle: Text(language.$2),
+                trailing: language.$1 == 'English'
+                    ? const Icon(Icons.check_circle, color: VaaniTheme.primary)
+                    : null,
+                onTap: () {
+                  Navigator.of(context).pop();
+                  showVaaniSnackBar(context, '${language.$1} selected');
+                },
+              ),
+          ],
+        ),
+      );
+    },
+  );
 }
 
 class VaaniSectionTitle extends StatelessWidget {

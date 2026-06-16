@@ -17,10 +17,12 @@ Implemented so far:
 - GoRouter navigation.
 - Firebase-ready repository layer.
 - Auth repository contracts, Firebase auth implementation, and interactive email/phone login preview.
-- Inventory domain model, Firestore repository, and tappable stock management preview.
+- Inventory domain model, Firestore repository, search, filters, local add-product flow, and tappable stock management.
 - Voice engine abstraction with speech-to-text and text-to-speech implementation.
 - Camera-first invoice scanner UI with reviewable OCR item selection and graceful preview fallback.
 - Sales analytics screen with period filters, sale draft action, export/share feedback, and tappable product insights.
+- Payment reminders screen with working filters, due detail sheet, and reminder state updates.
+- Settings profile, tutorial, support, and language actions with editable sheets.
 - AI intent classification layer with deterministic shortcuts and remote AI client wrappers.
 - Offline sync queue foundation.
 - Firebase Firestore and Storage security rules.
@@ -32,7 +34,7 @@ Still required before production:
 
 - Firebase project configuration through FlutterFire CLI.
 - Production authentication hardening, OTP delivery, and platform OAuth setup.
-- Persisted inventory CRUD forms and local SQLite persistence.
+- Persisted inventory CRUD forms and local SQLite persistence beyond the current local UI state.
 - Completed sales transaction persistence, reports, PDF export, and Excel export.
 - Live OCR text extraction, invoice parsing, GST validation, and backend review persistence.
 - Payment reminders through Cloud Functions, WhatsApp, SMS, and email providers.
@@ -69,9 +71,10 @@ Onboarding -> Home Dashboard -> Voice Assistant -> Inventory / Scanner / Udhaar 
 
 - The home dashboard is the daily command center.
 - The `Ask Vaani` action opens a modal voice assistant sheet, so the user does not lose dashboard context.
-- Bottom navigation provides quick movement between home, stock, voice, scanner, and settings.
-- Inventory stock updates use a bottom sheet pattern for quick in-place edits.
-- The scanner screen uses a live camera preview when available, with a fallback preview and review sheet before inventory creation.
+- Bottom navigation preserves tab state while moving between home, stock, voice, scanner, and settings.
+- Inventory search, filters, add-product, and stock updates use local state with bottom sheet patterns for quick in-place edits.
+- The scanner screen uses a live camera preview when available, with a fallback preview and selectable review sheet before inventory creation.
+- Payments, sales, settings, voice, and global search actions all open visible flows or update local UI state.
 
 ## Tech Stack
 

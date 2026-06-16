@@ -186,7 +186,7 @@ class _SalesScreenState extends State<SalesScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                'The billing flow is ready for product selection, quantities, and receipt export.',
+                'Create a local draft now; backend billing persistence and receipt export can attach to this flow.',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: VaaniTheme.onSurfaceVariant,
                     ),

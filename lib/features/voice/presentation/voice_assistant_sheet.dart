@@ -75,10 +75,7 @@ class _VoiceAssistantSheetState extends State<_VoiceAssistantSheet> {
                   ),
                   const Spacer(),
                   IconButton.filledTonal(
-                    onPressed: () => showVaaniSnackBar(
-                      context,
-                      'Language selector is ready',
-                    ),
+                    onPressed: () => showVaaniLanguageSheet(context),
                     icon: const Icon(Icons.language_rounded),
                   ),
                 ],
