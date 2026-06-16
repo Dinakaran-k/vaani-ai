@@ -165,10 +165,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
   }
 
   Future<void> _showAddProductSheet() async {
-    final rootContext = context;
-    final nameController = TextEditingController();
-    final categoryController = TextEditingController();
-    final quantityController = TextEditingController(text: '1');
     await showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
@@ -177,95 +173,116 @@ class _InventoryScreenState extends State<InventoryScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      builder: (sheetContext) {
-        return Padding(
-          padding: EdgeInsets.fromLTRB(
-            24,
-            8,
-            24,
-            28 + MediaQuery.viewInsetsOf(sheetContext).bottom,
+      builder: (_) => _AddProductSheet(
+        onAdd: (name, category, quantity) {
+          setState(() {
+            _products.insert(
+              0,
+              _ProductUi(
+                name,
+                category.isEmpty ? 'General stock' : category,
+                quantity,
+                quantity == 0
+                    ? 'out of stock'
+                    : quantity < 8
+                        ? 'low stock'
+                        : 'in stock',
+                quantity >= 8,
+              ),
+            );
+          });
+          showVaaniSnackBar(context, '$name added to inventory');
+        },
+      ),
+    );
+  }
+}
+
+class _AddProductSheet extends StatefulWidget {
+  const _AddProductSheet({required this.onAdd});
+
+  final void Function(String name, String category, int quantity) onAdd;
+
+  @override
+  State<_AddProductSheet> createState() => _AddProductSheetState();
+}
+
+class _AddProductSheetState extends State<_AddProductSheet> {
+  final _nameController = TextEditingController();
+  final _categoryController = TextEditingController();
+  final _quantityController = TextEditingController(text: '1');
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _categoryController.dispose();
+    _quantityController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        24,
+        8,
+        24,
+        28 + MediaQuery.viewInsetsOf(context).bottom,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Add Product', style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _nameController,
+            autofocus: true,
+            textInputAction: TextInputAction.next,
+            decoration: const InputDecoration(
+              labelText: 'Product name',
+              prefixIcon: Icon(Icons.inventory_2_outlined),
+            ),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Add Product',
-                style: Theme.of(sheetContext).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: nameController,
-                autofocus: true,
-                textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: 'Product name',
-                  prefixIcon: Icon(Icons.inventory_2_outlined),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: categoryController,
-                textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: 'Category',
-                  prefixIcon: Icon(Icons.category_outlined),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: quantityController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Opening quantity',
-                  prefixIcon: Icon(Icons.add_box_outlined),
-                ),
-              ),
-              const SizedBox(height: 20),
-              FilledButton.icon(
-                onPressed: () {
-                  final name = nameController.text.trim();
-                  final category = categoryController.text.trim();
-                  final quantity =
-                      int.tryParse(quantityController.text.trim()) ?? 0;
-                  if (name.isEmpty || quantity < 0) {
-                    showVaaniSnackBar(
-                      sheetContext,
-                      'Add a product name and valid quantity',
-                    );
-                    return;
-                  }
-                  setState(() {
-                    _products.insert(
-                      0,
-                      _ProductUi(
-                        name,
-                        category.isEmpty ? 'General stock' : category,
-                        quantity,
-                        quantity == 0
-                            ? 'out of stock'
-                            : quantity < 8
-                                ? 'low stock'
-                                : 'in stock',
-                        quantity >= 8,
-                      ),
-                    );
-                  });
-                  Navigator.of(sheetContext).pop();
-                  showVaaniSnackBar(rootContext, '$name added to inventory');
-                },
-                icon: const Icon(Icons.add),
-                label: const Text('Add product'),
-              ),
-            ],
+          const SizedBox(height: 12),
+          TextField(
+            controller: _categoryController,
+            textInputAction: TextInputAction.next,
+            decoration: const InputDecoration(
+              labelText: 'Category',
+              prefixIcon: Icon(Icons.category_outlined),
+            ),
           ),
-        );
-      },
-    ).whenComplete(() {
-      nameController.dispose();
-      categoryController.dispose();
-      quantityController.dispose();
-    });
+          const SizedBox(height: 12),
+          TextField(
+            controller: _quantityController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              labelText: 'Opening quantity',
+              prefixIcon: Icon(Icons.add_box_outlined),
+            ),
+          ),
+          const SizedBox(height: 20),
+          FilledButton.icon(
+            onPressed: _addProduct,
+            icon: const Icon(Icons.add),
+            label: const Text('Add product'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _addProduct() {
+    final name = _nameController.text.trim();
+    final category = _categoryController.text.trim();
+    final quantity = int.tryParse(_quantityController.text.trim()) ?? 0;
+    if (name.isEmpty || quantity < 0) {
+      showVaaniSnackBar(context, 'Add a product name and valid quantity');
+      return;
+    }
+    Navigator.of(context).pop();
+    widget.onAdd(name, category, quantity);
   }
 }
 

@@ -11,4 +11,4 @@ Required suites:
 - Security rule tests for business membership boundaries.
 - AI workflow tests using recorded schema-valid responses.
 
-The current scaffold includes initial domain and AI intent tests. Emulator and integration suites should be added after Firebase project configuration is generated.
+The current scaffold includes domain, AI intent, navigation-state, and mobile-flow widget tests. Emulator and integration suites should be added after Firebase project configuration is generated.

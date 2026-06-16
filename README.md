@@ -26,7 +26,7 @@ Implemented so far:
 - AI intent classification layer with deterministic shortcuts and remote AI client wrappers.
 - Offline sync queue foundation.
 - Firebase Firestore and Storage security rules.
-- CI workflow for format, analyze, tests, and Firebase rule deployment.
+- CI workflow for format, analyze, tests, debug APK builds, and guarded Firebase rule deployment.
 - Supporting project summary, problem statement, AI features, architecture, testing strategy, project structure, and DevOps documentation.
 - Starter unit tests for AI intent mapping and inventory stock logic.
 
@@ -111,9 +111,9 @@ lib/
     auth/               Firebase auth repository and login screen.
     dashboard/          Voice-first dashboard UI.
     inventory/          Product model, repository, providers, and screen.
-    ocr/                Invoice OCR result model and scanner screen shell.
-    payments/           Payment reminder model and screen shell.
-    sales/              Sale model and sales screen shell.
+    ocr/                Invoice OCR result model and camera scanner workflow.
+    payments/           Payment reminder model, filters, details, and reminder UI.
+    sales/              Sale model, analytics, product insights, and draft UI.
     voice/              Device speech and TTS engine.
 android/                Android app shell, manifests, Gradle config, and launch assets.
 test/                   Unit tests.

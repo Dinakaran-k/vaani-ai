@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:vaani_ai/app/theme.dart';
+import 'package:vaani_ai/features/auth/presentation/login_screen.dart';
 import 'package:vaani_ai/features/dashboard/presentation/dashboard_screen.dart';
 import 'package:vaani_ai/features/inventory/presentation/inventory_screen.dart';
 import 'package:vaani_ai/features/ocr/presentation/ocr_screen.dart';
@@ -48,6 +49,7 @@ void main() {
           path: '/onboarding',
           builder: (_, __) => const OnboardingScreen(),
         ),
+        GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
       ],
     );
 
@@ -138,6 +140,19 @@ void main() {
       expect(find.text('Payment dues'), findsOneWidget);
     });
 
+    testWidgets('global search sheet navigates to scanner', (tester) async {
+      await pumpRoute(tester, '/home');
+
+      await tester.tap(find.byTooltip('Search'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Search Vaani'), findsOneWidget);
+      await tester.tap(find.text('Scan invoice'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Invoice Scanner'), findsOneWidget);
+    });
+
     testWidgets('inventory supports in-place stock update sheet', (
       tester,
     ) async {
@@ -154,6 +169,33 @@ void main() {
       expect(find.text('4'), findsOneWidget);
       expect(find.text('Cancel'), findsOneWidget);
       expect(find.text('Save'), findsOneWidget);
+    });
+
+    testWidgets('inventory add-product sheet inserts local item', (
+      tester,
+    ) async {
+      await pumpRoute(tester, '/inventory');
+
+      await tester.tap(find.byIcon(Icons.add));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Product name'),
+        'Parle-G Biscuits',
+      );
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Category'),
+        'Snacks',
+      );
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Opening quantity'),
+        '12',
+      );
+      await tester.tap(find.widgetWithText(FilledButton, 'Add product'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Parle-G Biscuits'), findsOneWidget);
+      expect(find.text('12 pcs'), findsOneWidget);
     });
 
     testWidgets('scanner flow shows AI OCR review before inventory action', (
@@ -190,6 +232,23 @@ void main() {
       expect(find.text('All Dues (3)'), findsOneWidget);
       expect(find.text('Rajesh Kumar'), findsOneWidget);
       expect(find.text('Remind'), findsWidgets);
+
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, -320));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilledButton, 'Remind').first);
+      await tester.pumpAndSettle();
+
+      expect(find.text('REMINDED'), findsOneWidget);
+    });
+
+    testWidgets('login demo entry opens home dashboard', (tester) async {
+      await pumpRoute(tester, '/login');
+
+      expect(find.text('Welcome back'), findsOneWidget);
+      await tester.tap(find.text('Open demo business'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('TODAY SALES'), findsOneWidget);
     });
 
     testWidgets('settings exposes localization and voice preferences', (

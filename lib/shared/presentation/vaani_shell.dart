@@ -243,8 +243,6 @@ class VaaniBottomNav extends StatelessWidget {
 }
 
 Future<void> showVaaniSearchSheet(BuildContext context) {
-  final rootContext = context;
-  final controller = TextEditingController();
   return showModalBottomSheet<void>(
     context: context,
     showDragHandle: true,
@@ -253,58 +251,78 @@ Future<void> showVaaniSearchSheet(BuildContext context) {
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
     ),
-    builder: (sheetContext) {
-      final suggestions = [
-        ('Low stock items', Icons.inventory_2_outlined, '/inventory'),
-        ('Scan invoice', Icons.document_scanner_outlined, '/ocr'),
-        ('Open voice assistant', Icons.graphic_eq, '/voice'),
-        ('Settings', Icons.settings_outlined, '/settings'),
-      ];
-      return Padding(
-        padding: EdgeInsets.fromLTRB(
-          24,
-          8,
-          24,
-          24 + MediaQuery.viewInsetsOf(context).bottom,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Search Vaani',
-              style: Theme.of(sheetContext).textTheme.titleLarge,
+    builder: (sheetContext) => _VaaniSearchSheet(rootContext: context),
+  );
+}
+
+class _VaaniSearchSheet extends StatefulWidget {
+  const _VaaniSearchSheet({required this.rootContext});
+
+  final BuildContext rootContext;
+
+  @override
+  State<_VaaniSearchSheet> createState() => _VaaniSearchSheetState();
+}
+
+class _VaaniSearchSheetState extends State<_VaaniSearchSheet> {
+  final _controller = TextEditingController();
+
+  static const _suggestions = [
+    ('Low stock items', Icons.inventory_2_outlined, '/inventory'),
+    ('Scan invoice', Icons.document_scanner_outlined, '/ocr'),
+    ('Open voice assistant', Icons.graphic_eq, '/voice'),
+    ('Settings', Icons.settings_outlined, '/settings'),
+  ];
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        24,
+        8,
+        24,
+        24 + MediaQuery.viewInsetsOf(context).bottom,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Search Vaani', style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 14),
+          TextField(
+            controller: _controller,
+            autofocus: true,
+            decoration: const InputDecoration(
+              hintText: 'Search stock, scanner, settings...',
+              prefixIcon: Icon(Icons.search_rounded),
             ),
-            const SizedBox(height: 14),
-            TextField(
-              controller: controller,
-              autofocus: true,
-              decoration: const InputDecoration(
-                hintText: 'Search stock, scanner, settings...',
-                prefixIcon: Icon(Icons.search_rounded),
-              ),
-              onSubmitted: (value) {
-                Navigator.of(sheetContext).pop();
-                showVaaniSnackBar(rootContext, 'Searching for "$value"');
+            onSubmitted: (value) {
+              Navigator.of(context).pop();
+              showVaaniSnackBar(widget.rootContext, 'Searching for "$value"');
+            },
+          ),
+          const SizedBox(height: 18),
+          for (final suggestion in _suggestions)
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: CircleAvatar(child: Icon(suggestion.$2)),
+              title: Text(suggestion.$1),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () {
+                Navigator.of(context).pop();
+                widget.rootContext.go(suggestion.$3);
               },
             ),
-            const SizedBox(height: 18),
-            for (final suggestion in suggestions)
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: CircleAvatar(child: Icon(suggestion.$2)),
-                title: Text(suggestion.$1),
-                trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  rootContext.go(suggestion.$3);
-                },
-              ),
-          ],
-        ),
-      );
-    },
-  ).whenComplete(controller.dispose);
+        ],
+      ),
+    );
+  }
 }
 
 void showVaaniSnackBar(BuildContext context, String message) {
