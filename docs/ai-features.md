@@ -37,7 +37,7 @@ The product targets English, Hindi, Tamil, Telugu, Bengali, Marathi, Kannada, Ma
 
 ### OCR-Assisted Workflows
 
-Invoice scanning uses OCR as a separate capability from AI intent routing. Extracted invoice data should be reviewed by the merchant before the app creates or updates inventory records.
+Invoice scanning uses OCR as a separate capability from AI intent routing. The current scanner UI supports a camera-first capture surface and reviewable extracted-item selection; production OCR parsing should fill that review state before the app creates or updates inventory records.
 
 ## Safety Rules
 

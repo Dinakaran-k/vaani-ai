@@ -11,14 +11,16 @@ Implemented so far:
 - Flutter app scaffold with Material 3 UI.
 - Android platform project scaffold for debug builds and device installs.
 - Branded Vaani AI app icon, web favicon, and in-app brand mark.
-- Stitch-inspired mobile UI flow with animated onboarding, dashboard, voice, inventory, scanner, payments, and settings screens.
+- Stitch-inspired mobile UI flow with animated onboarding, dashboard, login, voice, inventory, camera scanner, sales, payments, and settings screens.
 - Feature-first clean architecture structure.
 - Riverpod dependency wiring.
 - GoRouter navigation.
 - Firebase-ready repository layer.
-- Auth repository contracts and Firebase auth implementation.
-- Inventory domain model and Firestore repository.
+- Auth repository contracts, Firebase auth implementation, and interactive email/phone login preview.
+- Inventory domain model, Firestore repository, and tappable stock management preview.
 - Voice engine abstraction with speech-to-text and text-to-speech implementation.
+- Camera-first invoice scanner UI with reviewable OCR item selection and graceful preview fallback.
+- Sales analytics screen with period filters, sale draft action, export/share feedback, and tappable product insights.
 - AI intent classification layer with deterministic shortcuts and remote AI client wrappers.
 - Offline sync queue foundation.
 - Firebase Firestore and Storage security rules.
@@ -29,10 +31,10 @@ Implemented so far:
 Still required before production:
 
 - Firebase project configuration through FlutterFire CLI.
-- Full authentication UX and platform OAuth setup.
-- Complete inventory CRUD screens and local SQLite persistence.
-- Sales transaction workflows, reports, PDF export, and Excel export.
-- OCR camera flow, invoice parsing, GST validation, and review UI.
+- Production authentication hardening, OTP delivery, and platform OAuth setup.
+- Persisted inventory CRUD forms and local SQLite persistence.
+- Completed sales transaction persistence, reports, PDF export, and Excel export.
+- Live OCR text extraction, invoice parsing, GST validation, and backend review persistence.
 - Payment reminders through Cloud Functions, WhatsApp, SMS, and email providers.
 - Cloud Functions gateway for OpenAI, Gemini, and provider secrets.
 - App Check, Crashlytics, Analytics dashboards, release signing, and monitoring.
@@ -69,7 +71,7 @@ Onboarding -> Home Dashboard -> Voice Assistant -> Inventory / Scanner / Udhaar 
 - The `Ask Vaani` action opens a modal voice assistant sheet, so the user does not lose dashboard context.
 - Bottom navigation provides quick movement between home, stock, voice, scanner, and settings.
 - Inventory stock updates use a bottom sheet pattern for quick in-place edits.
-- The scanner screen uses an animated scan preview and review sheet before inventory creation.
+- The scanner screen uses a live camera preview when available, with a fallback preview and review sheet before inventory creation.
 
 ## Tech Stack
 

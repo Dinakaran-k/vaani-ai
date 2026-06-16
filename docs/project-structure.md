@@ -11,12 +11,12 @@ lib/
     sync/               Offline queue and background sync engine.
   features/
     ai/                 Intent classification and AI tool routing.
-    auth/               Email, Google, and phone OTP authentication.
+    auth/               Email, Google, and phone OTP authentication UI.
     dashboard/          KPIs, charts, insights, and voice entrypoint.
     inventory/          Product CRUD, stock updates, low-stock alerts.
-    ocr/                Invoice scan models and OCR workflow.
+    ocr/                Camera scanner UI, invoice scan models, and OCR workflow.
     payments/           Reminder scheduling and communication channels.
-    sales/              Transactions, reports, export models.
+    sales/              Analytics UI, transaction drafts, reports, export models.
     voice/              Speech-to-text and text-to-speech engines.
 android/                Android platform shell, manifests, Gradle config, wrapper, and launch assets.
 test/                   Unit and workflow tests.

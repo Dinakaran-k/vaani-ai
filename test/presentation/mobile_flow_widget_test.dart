@@ -35,7 +35,10 @@ void main() {
           path: '/voice',
           builder: (_, __) => const VoiceAssistantScreen(),
         ),
-        GoRoute(path: '/ocr', builder: (_, __) => const OcrScreen()),
+        GoRoute(
+          path: '/ocr',
+          builder: (_, __) => const OcrScreen(cameraEnabled: false),
+        ),
         GoRoute(
           path: '/payments',
           builder: (_, __) => const PaymentRemindersScreen(),
@@ -159,16 +162,21 @@ void main() {
       await pumpRoute(tester, '/ocr');
 
       expect(find.text('Invoice Scanner'), findsOneWidget);
-      expect(find.text('Invoice Details'), findsOneWidget);
-      expect(find.text('AI Scanned'), findsOneWidget);
+      expect(find.text('Review Invoice'), findsOneWidget);
+      expect(find.text('AI Review'), findsOneWidget);
       expect(find.text('Rice (Premium 25kg)'), findsOneWidget);
-      expect(find.text('Mustard Oil (1L)'), findsOneWidget);
       await tester.scrollUntilVisible(
-        find.text('Add items to inventory'),
+        find.text('Mustard Oil (1L)'),
         80,
         scrollable: find.byType(Scrollable).last,
       );
-      expect(find.text('Add items to inventory'), findsOneWidget);
+      expect(find.text('Mustard Oil (1L)'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Add items'),
+        80,
+        scrollable: find.byType(Scrollable).last,
+      );
+      expect(find.text('Add items'), findsOneWidget);
     });
 
     testWidgets('payment reminders show udhaar insight and reminder actions', (
