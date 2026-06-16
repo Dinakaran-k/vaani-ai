@@ -165,6 +165,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
   }
 
   Future<void> _showAddProductSheet() async {
+    final rootContext = context;
     final nameController = TextEditingController();
     final categoryController = TextEditingController();
     final quantityController = TextEditingController(text: '1');
@@ -176,13 +177,13 @@ class _InventoryScreenState extends State<InventoryScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      builder: (context) {
+      builder: (sheetContext) {
         return Padding(
           padding: EdgeInsets.fromLTRB(
             24,
             8,
             24,
-            28 + MediaQuery.viewInsetsOf(context).bottom,
+            28 + MediaQuery.viewInsetsOf(sheetContext).bottom,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -190,7 +191,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
             children: [
               Text(
                 'Add Product',
-                style: Theme.of(context).textTheme.titleLarge,
+                style: Theme.of(sheetContext).textTheme.titleLarge,
               ),
               const SizedBox(height: 12),
               TextField(
@@ -229,7 +230,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       int.tryParse(quantityController.text.trim()) ?? 0;
                   if (name.isEmpty || quantity < 0) {
                     showVaaniSnackBar(
-                      context,
+                      sheetContext,
                       'Add a product name and valid quantity',
                     );
                     return;
@@ -250,8 +251,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       ),
                     );
                   });
-                  Navigator.of(context).pop();
-                  showVaaniSnackBar(context, '$name added to inventory');
+                  Navigator.of(sheetContext).pop();
+                  showVaaniSnackBar(rootContext, '$name added to inventory');
                 },
                 icon: const Icon(Icons.add),
                 label: const Text('Add product'),

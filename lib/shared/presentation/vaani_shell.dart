@@ -243,6 +243,7 @@ class VaaniBottomNav extends StatelessWidget {
 }
 
 Future<void> showVaaniSearchSheet(BuildContext context) {
+  final rootContext = context;
   final controller = TextEditingController();
   return showModalBottomSheet<void>(
     context: context,
@@ -252,7 +253,7 @@ Future<void> showVaaniSearchSheet(BuildContext context) {
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
     ),
-    builder: (context) {
+    builder: (sheetContext) {
       final suggestions = [
         ('Low stock items', Icons.inventory_2_outlined, '/inventory'),
         ('Scan invoice', Icons.document_scanner_outlined, '/ocr'),
@@ -270,7 +271,10 @@ Future<void> showVaaniSearchSheet(BuildContext context) {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Search Vaani', style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              'Search Vaani',
+              style: Theme.of(sheetContext).textTheme.titleLarge,
+            ),
             const SizedBox(height: 14),
             TextField(
               controller: controller,
@@ -280,8 +284,8 @@ Future<void> showVaaniSearchSheet(BuildContext context) {
                 prefixIcon: Icon(Icons.search_rounded),
               ),
               onSubmitted: (value) {
-                Navigator.of(context).pop();
-                showVaaniSnackBar(context, 'Searching for "$value"');
+                Navigator.of(sheetContext).pop();
+                showVaaniSnackBar(rootContext, 'Searching for "$value"');
               },
             ),
             const SizedBox(height: 18),
@@ -292,8 +296,8 @@ Future<void> showVaaniSearchSheet(BuildContext context) {
                 title: Text(suggestion.$1),
                 trailing: const Icon(Icons.chevron_right_rounded),
                 onTap: () {
-                  Navigator.of(context).pop();
-                  context.go(suggestion.$3);
+                  Navigator.of(sheetContext).pop();
+                  rootContext.go(suggestion.$3);
                 },
               ),
           ],
@@ -318,6 +322,7 @@ void showVaaniSnackBar(BuildContext context, String message) {
 }
 
 Future<void> showVaaniLanguageSheet(BuildContext context) {
+  final rootContext = context;
   const languages = [
     ('English', 'Default'),
     ('Hindi', 'Hindi'),
@@ -333,7 +338,7 @@ Future<void> showVaaniLanguageSheet(BuildContext context) {
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
     ),
-    builder: (context) {
+    builder: (sheetContext) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
         child: Column(
@@ -342,7 +347,7 @@ Future<void> showVaaniLanguageSheet(BuildContext context) {
           children: [
             Text(
               'Voice Language',
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(sheetContext).textTheme.titleLarge,
             ),
             const SizedBox(height: 12),
             for (final language in languages)
@@ -358,8 +363,8 @@ Future<void> showVaaniLanguageSheet(BuildContext context) {
                     ? const Icon(Icons.check_circle, color: VaaniTheme.primary)
                     : null,
                 onTap: () {
-                  Navigator.of(context).pop();
-                  showVaaniSnackBar(context, '${language.$1} selected');
+                  Navigator.of(sheetContext).pop();
+                  showVaaniSnackBar(rootContext, '${language.$1} selected');
                 },
               ),
           ],

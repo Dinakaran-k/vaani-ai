@@ -160,6 +160,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _showProfileSheet() {
+    final rootContext = context;
     final ownerController = TextEditingController(text: 'Rajesh Kumar');
     final shopController = TextEditingController(text: 'Kumar Provisions');
     return showModalBottomSheet<void>(
@@ -170,13 +171,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      builder: (context) {
+      builder: (sheetContext) {
         return Padding(
           padding: EdgeInsets.fromLTRB(
             24,
             8,
             24,
-            28 + MediaQuery.viewInsetsOf(context).bottom,
+            28 + MediaQuery.viewInsetsOf(sheetContext).bottom,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -184,7 +185,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               Text(
                 'Edit Profile',
-                style: Theme.of(context).textTheme.titleLarge,
+                style: Theme.of(sheetContext).textTheme.titleLarge,
               ),
               const SizedBox(height: 14),
               TextField(
@@ -205,8 +206,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 20),
               FilledButton.icon(
                 onPressed: () {
-                  Navigator.of(context).pop();
-                  showVaaniSnackBar(context, 'Profile saved locally');
+                  Navigator.of(sheetContext).pop();
+                  showVaaniSnackBar(rootContext, 'Profile saved locally');
                 },
                 icon: const Icon(Icons.save_outlined),
                 label: const Text('Save profile'),
@@ -229,7 +230,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      builder: (context) {
+      builder: (sheetContext) {
         return Padding(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
           child: Column(
@@ -238,7 +239,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               Text(
                 'Quick Tutorial',
-                style: Theme.of(context).textTheme.titleLarge,
+                style: Theme.of(sheetContext).textTheme.titleLarge,
               ),
               const SizedBox(height: 14),
               const _TutorialStep(
@@ -261,6 +262,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _showSupportSheet() {
+    final rootContext = context;
     return showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
@@ -268,7 +270,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      builder: (context) {
+      builder: (sheetContext) {
         return Padding(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
           child: Column(
@@ -277,7 +279,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               Text(
                 'Contact Support',
-                style: Theme.of(context).textTheme.titleLarge,
+                style: Theme.of(sheetContext).textTheme.titleLarge,
               ),
               const SizedBox(height: 14),
               ListTile(
@@ -286,8 +288,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: const Text('Start support chat'),
                 subtitle: const Text('Usually replies within one business day'),
                 onTap: () {
-                  Navigator.of(context).pop();
-                  showVaaniSnackBar(context, 'Support chat started');
+                  Navigator.of(sheetContext).pop();
+                  showVaaniSnackBar(rootContext, 'Support chat started');
                 },
               ),
               ListTile(
@@ -296,8 +298,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: const Text('Email support'),
                 subtitle: const Text('support@vaani.ai'),
                 onTap: () {
-                  Navigator.of(context).pop();
-                  showVaaniSnackBar(context, 'Support email prepared');
+                  Navigator.of(sheetContext).pop();
+                  showVaaniSnackBar(rootContext, 'Support email prepared');
                 },
               ),
             ],

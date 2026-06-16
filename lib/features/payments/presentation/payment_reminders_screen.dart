@@ -186,6 +186,7 @@ class _PaymentRemindersScreenState extends State<PaymentRemindersScreen> {
   }
 
   Future<void> _showDueDetails(_DueUi due) {
+    final rootContext = context;
     return showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
@@ -193,14 +194,17 @@ class _PaymentRemindersScreenState extends State<PaymentRemindersScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      builder: (context) {
+      builder: (sheetContext) {
         return Padding(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(due.name, style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                due.name,
+                style: Theme.of(sheetContext).textTheme.titleLarge,
+              ),
               const SizedBox(height: 8),
               Text(due.phone),
               const SizedBox(height: 18),
@@ -211,7 +215,7 @@ class _PaymentRemindersScreenState extends State<PaymentRemindersScreen> {
                     const SizedBox(width: 12),
                     Text(
                       'Rs ${_formatAmount(due.amount)} due',
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: Theme.of(sheetContext).textTheme.titleMedium,
                     ),
                   ],
                 ),
@@ -219,7 +223,8 @@ class _PaymentRemindersScreenState extends State<PaymentRemindersScreen> {
               const SizedBox(height: 18),
               FilledButton.icon(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.of(sheetContext).pop();
+                  if (!rootContext.mounted) return;
                   _markReminded(due);
                 },
                 icon: const Icon(Icons.message_outlined),

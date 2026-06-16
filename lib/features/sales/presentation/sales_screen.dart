@@ -166,6 +166,7 @@ class _SalesScreenState extends State<SalesScreen> {
   }
 
   Future<void> _showNewSaleSheet(BuildContext context) {
+    final rootContext = context;
     return showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
@@ -173,7 +174,7 @@ class _SalesScreenState extends State<SalesScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      builder: (context) {
+      builder: (sheetContext) {
         return Padding(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
           child: Column(
@@ -182,20 +183,20 @@ class _SalesScreenState extends State<SalesScreen> {
             children: [
               Text(
                 'Record Sale',
-                style: Theme.of(context).textTheme.titleLarge,
+                style: Theme.of(sheetContext).textTheme.titleLarge,
               ),
               const SizedBox(height: 12),
               Text(
                 'Create a local draft now; backend billing persistence and receipt export can attach to this flow.',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                style: Theme.of(sheetContext).textTheme.bodyLarge?.copyWith(
                       color: VaaniTheme.onSurfaceVariant,
                     ),
               ),
               const SizedBox(height: 20),
               FilledButton.icon(
                 onPressed: () {
-                  Navigator.of(context).pop();
-                  showVaaniSnackBar(context, 'Sale draft created');
+                  Navigator.of(sheetContext).pop();
+                  showVaaniSnackBar(rootContext, 'Sale draft created');
                 },
                 icon: const Icon(Icons.receipt_long_outlined),
                 label: const Text('Create draft'),
