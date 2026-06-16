@@ -352,6 +352,7 @@ Future<void> showVaaniLanguageSheet(BuildContext context) {
   return showModalBottomSheet<void>(
     context: context,
     showDragHandle: true,
+    isScrollControlled: true,
     backgroundColor: VaaniTheme.surface,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
@@ -359,33 +360,37 @@ Future<void> showVaaniLanguageSheet(BuildContext context) {
     builder: (sheetContext) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Voice Language',
-              style: Theme.of(sheetContext).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 12),
-            for (final language in languages)
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: CircleAvatar(
-                  backgroundColor: VaaniTheme.primaryContainer,
-                  child: Text(language.$1.characters.first),
-                ),
-                title: Text(language.$1),
-                subtitle: Text(language.$2),
-                trailing: language.$1 == 'English'
-                    ? const Icon(Icons.check_circle, color: VaaniTheme.primary)
-                    : null,
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  showVaaniSnackBar(rootContext, '${language.$1} selected');
-                },
+        child: SizedBox(
+          height: MediaQuery.sizeOf(sheetContext).height * 0.62,
+          child: ListView(
+            children: [
+              Text(
+                'Voice Language',
+                style: Theme.of(sheetContext).textTheme.titleLarge,
               ),
-          ],
+              const SizedBox(height: 12),
+              for (final language in languages)
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: CircleAvatar(
+                    backgroundColor: VaaniTheme.primaryContainer,
+                    child: Text(language.$1.characters.first),
+                  ),
+                  title: Text(language.$1),
+                  subtitle: Text(language.$2),
+                  trailing: language.$1 == 'English'
+                      ? const Icon(
+                          Icons.check_circle,
+                          color: VaaniTheme.primary,
+                        )
+                      : null,
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    showVaaniSnackBar(rootContext, '${language.$1} selected');
+                  },
+                ),
+            ],
+          ),
         ),
       );
     },

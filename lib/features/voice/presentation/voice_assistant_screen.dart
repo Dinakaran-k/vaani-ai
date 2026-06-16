@@ -61,12 +61,12 @@ class _VoiceAssistantScreenState extends State<VoiceAssistantScreen> {
                 ),
                 const Spacer(),
                 AnimatedAiGlow(
-                  size: 244,
+                  size: MediaQuery.sizeOf(context).height < 760 ? 188 : 206,
                   glowColor:
                       _listening ? VaaniTheme.primary : VaaniTheme.secondary,
                   child: const AnimatedVaaniWaveform(),
                 ),
-                const SizedBox(height: 48),
+                const SizedBox(height: 28),
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 260),
                   child: Column(
@@ -116,7 +116,7 @@ class _VoiceAssistantScreenState extends State<VoiceAssistantScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 18),
                 FilledButton.icon(
                   onPressed: () => setState(() => _listening = !_listening),
                   icon: Icon(_listening ? Icons.mic_rounded : Icons.stop),

@@ -34,6 +34,6 @@ The product must solve four practical gaps:
 
 ## Scope
 
-The current repository provides a production-oriented foundation rather than a finished production app. It includes the Flutter app structure, mobile UI flow, Firebase-ready data layer, voice and AI abstractions, offline sync foundation, security rules, and starter tests.
+The current repository provides a production-oriented foundation rather than a finished production app. It includes the Flutter app structure, mobile UI flow, Firebase-ready data layer, voice and AI abstractions, offline sync foundation, security rules, and unit/widget tests for critical prototype flows.
 
-Production work still requires full Firebase configuration, completed CRUD flows, OCR review implementation, payment provider integrations, Cloud Functions gateways, release monitoring, and expanded automated testing.
+Production work still requires full Firebase configuration, persisted CRUD flows, live OCR parsing and review persistence, payment provider integrations, Cloud Functions gateways, release monitoring, and emulator/integration/golden/accessibility testing.

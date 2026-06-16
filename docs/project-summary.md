@@ -35,7 +35,7 @@ Small merchants often manage business operations through paper notes, spreadshee
 - Sales domain model, analytics period filters, sale draft action, and tappable product insights.
 - Offline sync queue foundation.
 - Firebase security rules and indexes.
-- Starter unit and widget tests.
+- Unit, navigation-state, and mobile-flow widget tests.
 
 ## Technology Stack
 
@@ -66,7 +66,7 @@ Vaani AI uses AI for natural language interpretation, not uncontrolled data muta
 
 ## Current Status
 
-The repository currently provides a production-oriented foundation rather than a complete production app. It includes core app structure, Android platform scaffolding, interactive UI flows, data models, Firebase-ready repositories, AI and voice abstractions, camera scanner preview, local payment and inventory interactions, sync foundations, documentation, and starter tests.
+The repository currently provides a production-oriented foundation rather than a complete production app. It includes core app structure, Android platform support, interactive UI flows, data models, Firebase-ready repositories, AI and voice abstractions, camera scanner preview, local payment, sales, and inventory interactions, sync foundations, documentation, and unit/widget tests.
 
 ## Remaining Work
 
@@ -77,7 +77,7 @@ The repository currently provides a production-oriented foundation rather than a
 - Connect live OCR text extraction, invoice parsing, GST validation, and review persistence.
 - Add a Cloud Functions gateway for AI, WhatsApp, SMS, email, and provider secrets.
 - Add App Check, Crashlytics, Analytics dashboards, release signing, and monitoring.
-- Add emulator-backed security rule tests, integration tests, and broader widget coverage.
+- Add emulator-backed security rule tests, integration tests, golden tests, accessibility checks, and release monitoring coverage.
 
 ## Documentation Index
 

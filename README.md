@@ -8,8 +8,8 @@ This repository is a production-oriented Flutter/Firebase foundation, not a comp
 
 Implemented so far:
 
-- Flutter app scaffold with Material 3 UI.
-- Android platform project scaffold for debug builds and device installs.
+- Flutter mobile app with Material 3 UI.
+- Android platform project for debug builds and device installs.
 - Branded Vaani AI app icon, web favicon, and in-app brand mark.
 - Stitch-inspired mobile UI flow with animated onboarding, dashboard, login, voice, inventory, camera scanner, sales, payments, and settings screens.
 - Feature-first clean architecture structure.
@@ -28,7 +28,7 @@ Implemented so far:
 - Firebase Firestore and Storage security rules.
 - CI workflow for format, analyze, tests, debug APK builds, and guarded Firebase rule deployment.
 - Supporting project summary, problem statement, AI features, architecture, testing strategy, project structure, and DevOps documentation.
-- Starter unit tests for AI intent mapping and inventory stock logic.
+- Unit, navigation-state, and mobile-flow widget tests for AI, domain, onboarding, login, voice, inventory, scanner, sales, payments, settings, and tab-state behavior.
 
 Still required before production:
 
@@ -41,7 +41,7 @@ Still required before production:
 - Cloud Functions gateway for OpenAI, Gemini, and provider secrets.
 - App Check, Crashlytics, Analytics dashboards, release signing, and monitoring.
 - Emulator-backed Firebase security rule tests.
-- Integration tests and broader widget coverage.
+- Integration, golden, accessibility, and emulator-backed security rule tests.
 
 ## Visual Flow
 
@@ -113,10 +113,11 @@ lib/
     inventory/          Product model, repository, providers, and screen.
     ocr/                Invoice OCR result model and camera scanner workflow.
     payments/           Payment reminder model, filters, details, and reminder UI.
-    sales/              Sale model, analytics, product insights, and draft UI.
+    sales/              Sale model, analytics, product insights, and draft actions.
+    settings/           Language, voice, profile, tutorial, and support preferences UI.
     voice/              Device speech and TTS engine.
 android/                Android app shell, manifests, Gradle config, and launch assets.
-test/                   Unit tests.
+test/                   Unit, navigation-state, and mobile-flow widget tests.
 docs/                   Project summary, problem statement, AI features, architecture, DevOps, testing, and structure docs.
 ```
 
@@ -208,14 +209,13 @@ firebase deploy --only firestore:rules,firestore:indexes,storage:rules
 
 ## Verification
 
-Last verified locally:
+Last verified locally on 2026-06-16:
 
 ```text
 dart format lib test
 flutter analyze
 flutter test
 flutter build apk --debug
-adb install and launch on I2305 Android device
 ```
 
 Result:
@@ -223,7 +223,7 @@ Result:
 ```text
 No analyzer issues.
 All tests passed.
-Debug APK built, installed, and launched on a connected Android device.
+Debug APK built successfully.
 ```
 
 ## License

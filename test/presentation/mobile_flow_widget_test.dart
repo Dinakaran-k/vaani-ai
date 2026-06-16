@@ -221,6 +221,38 @@ void main() {
       expect(find.text('Add items'), findsOneWidget);
     });
 
+    testWidgets(
+        'sales screen exposes period, draft, export, and insight actions',
+        (tester) async {
+      await pumpRoute(tester, '/sales');
+
+      expect(find.text('Sales Analytics'), findsOneWidget);
+      expect(find.text('MONTH REVENUE'), findsOneWidget);
+      expect(find.text('Rs 3,82,000'), findsOneWidget);
+
+      await tester.tap(find.text('Today'));
+      await tester.pumpAndSettle();
+      expect(find.text('TODAY REVENUE'), findsOneWidget);
+      expect(find.text('Rs 18,420'), findsOneWidget);
+
+      await tester.tap(find.byTooltip('Export report'));
+      await tester.pumpAndSettle();
+      expect(find.text('Sales report export queued'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(FilledButton, 'New sale'));
+      await tester.pumpAndSettle();
+      expect(find.text('Record Sale'), findsOneWidget);
+      await tester.tap(find.widgetWithText(FilledButton, 'Create draft'));
+      await tester.pumpAndSettle();
+      expect(find.text('Sale draft created'), findsOneWidget);
+
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, -360));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Basmati Rice'));
+      await tester.pumpAndSettle();
+      expect(find.text('Basmati Rice insight opened'), findsOneWidget);
+    });
+
     testWidgets('payment reminders show udhaar insight and reminder actions', (
       tester,
     ) async {
@@ -249,6 +281,27 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('TODAY SALES'), findsOneWidget);
+    });
+
+    testWidgets('voice screen toggles commands and opens language selector', (
+      tester,
+    ) async {
+      await pumpRoute(tester, '/voice');
+
+      expect(find.text('Listening'), findsOneWidget);
+      await tester.tap(find.text('Low stock items'));
+      await tester.pump(const Duration(milliseconds: 450));
+      expect(find.text('Thinking'), findsOneWidget);
+      expect(find.text('Command selected: Low stock items'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(FilledButton, 'Stop'));
+      await tester.pump(const Duration(milliseconds: 450));
+      expect(find.text('Listening'), findsOneWidget);
+
+      await tester.tap(find.byIcon(Icons.language_rounded));
+      await tester.pump(const Duration(milliseconds: 450));
+      expect(find.text('Voice Language'), findsOneWidget);
+      expect(find.text('Tamil'), findsWidgets);
     });
 
     testWidgets('settings exposes localization and voice preferences', (

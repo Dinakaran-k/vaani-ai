@@ -15,12 +15,13 @@ lib/
     dashboard/          KPIs, charts, insights, and voice entrypoint.
     inventory/          Product CRUD UI, stock updates, search, filters, low-stock alerts.
     ocr/                Camera scanner UI, invoice scan models, and OCR workflow.
-    payments/           Reminder filters, local reminder state, scheduling, communication channels.
-    sales/              Analytics UI, transaction drafts, reports, export models.
+    payments/           Reminder domain model, filters, due details, and local reminder state.
+    sales/              Sale domain model, analytics UI, draft action, export/share feedback, and product insights.
+    settings/           Language, voice, profile, tutorial, and support preference UI.
     voice/              Speech-to-text and text-to-speech engines.
 android/                Android platform shell, manifests, Gradle config, wrapper, and launch assets.
-test/                   Unit and workflow tests.
-docs/                   Project summary, problem statement, AI features, architecture, schemas, risks, and release guidance.
+test/                   Unit, navigation-state, and mobile-flow widget tests.
+docs/                   Project summary, problem statement, AI features, architecture, DevOps, testing, and structure docs.
 ```
 
 Feature folders use clean architecture:
