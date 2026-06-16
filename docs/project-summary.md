@@ -35,7 +35,7 @@ Small merchants often manage business operations through paper notes, spreadshee
 - Sales domain model, analytics period filters, sale draft action, and tappable product insights.
 - Offline sync queue foundation.
 - Firebase security rules and indexes.
-- Unit, navigation-state, and mobile-flow widget tests.
+- Unit, navigation-state, compact-viewport, and mobile-flow widget tests.
 
 ## Technology Stack
 

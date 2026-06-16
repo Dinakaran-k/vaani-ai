@@ -150,20 +150,31 @@ class _AnimatedVaaniWaveformState extends State<AnimatedVaaniWaveform>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) {
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            for (var index = 0; index < widget.barCount; index++)
-              _WaveBar(
-                width: widget.width,
-                height: _heightFor(index),
-                margin: EdgeInsets.symmetric(horizontal: widget.spacing),
-              ),
-          ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final naturalWidth =
+            widget.barCount * (widget.width + widget.spacing * 2);
+        final scale = constraints.maxWidth.isFinite
+            ? math.min(1.0, constraints.maxWidth / naturalWidth)
+            : 1.0;
+        return AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                for (var index = 0; index < widget.barCount; index++)
+                  _WaveBar(
+                    width: widget.width * scale,
+                    height: _heightFor(index) * scale,
+                    margin: EdgeInsets.symmetric(
+                      horizontal: widget.spacing * scale,
+                    ),
+                  ),
+              ],
+            );
+          },
         );
       },
     );

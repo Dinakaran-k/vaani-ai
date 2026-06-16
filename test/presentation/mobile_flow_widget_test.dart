@@ -16,9 +16,10 @@ import 'package:vaani_ai/features/voice/presentation/voice_assistant_screen.dart
 void main() {
   Future<void> pumpRoute(
     WidgetTester tester,
-    String initialLocation,
-  ) async {
-    tester.view.physicalSize = const Size(390, 844);
+    String initialLocation, {
+    Size viewport = const Size(390, 844),
+  }) async {
+    tester.view.physicalSize = viewport;
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -338,6 +339,26 @@ void main() {
         findsOneWidget,
       );
       expect(find.textContaining('AI OCR', findRichText: true), findsOneWidget);
+    });
+
+    testWidgets('primary screens fit compact mobile viewport', (tester) async {
+      const routes = [
+        '/home',
+        '/inventory',
+        '/sales',
+        '/voice',
+        '/ocr',
+        '/payments',
+        '/settings',
+        '/login',
+        '/onboarding',
+      ];
+
+      for (final route in routes) {
+        await pumpRoute(tester, route, viewport: const Size(360, 700));
+        await tester.pump(const Duration(milliseconds: 350));
+        expect(tester.takeException(), isNull, reason: '$route overflowed');
+      }
     });
   });
 }

@@ -28,7 +28,7 @@ Implemented so far:
 - Firebase Firestore and Storage security rules.
 - CI workflow for format, analyze, tests, debug APK builds, and guarded Firebase rule deployment.
 - Supporting project summary, problem statement, AI features, architecture, testing strategy, project structure, and DevOps documentation.
-- Unit, navigation-state, and mobile-flow widget tests for AI, domain, onboarding, login, voice, inventory, scanner, sales, payments, settings, and tab-state behavior.
+- Unit, navigation-state, compact-viewport, and mobile-flow widget tests for AI, domain, onboarding, login, voice, inventory, scanner, sales, payments, settings, and tab-state behavior.
 
 Still required before production:
 
@@ -117,7 +117,7 @@ lib/
     settings/           Language, voice, profile, tutorial, and support preferences UI.
     voice/              Device speech and TTS engine.
 android/                Android app shell, manifests, Gradle config, and launch assets.
-test/                   Unit, navigation-state, and mobile-flow widget tests.
+test/                   Unit, navigation-state, compact-viewport, and mobile-flow widget tests.
 docs/                   Project summary, problem statement, AI features, architecture, DevOps, testing, and structure docs.
 ```
 
