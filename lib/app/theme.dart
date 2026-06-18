@@ -12,6 +12,9 @@ class VaaniTheme {
   static const surfaceContainerHigh = Color(0xFFE9E6F3);
   static const onSurface = Color(0xFF1B1B23);
   static const onSurfaceVariant = Color(0xFF464554);
+  static const radius = 8.0;
+  static const controlRadius = 10.0;
+  static const sheetRadius = 20.0;
 
   static const aiGradient = LinearGradient(
     begin: Alignment.topLeft,
@@ -62,7 +65,7 @@ class VaaniTheme {
         margin: EdgeInsets.zero,
         color: Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(radius),
           side: const BorderSide(color: Color(0xFFE2E0EE)),
         ),
       ),
@@ -70,11 +73,11 @@ class VaaniTheme {
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(controlRadius),
           borderSide: const BorderSide(color: Color(0xFFC7C4D7)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(controlRadius),
           borderSide: const BorderSide(color: primary, width: 2),
         ),
       ),
@@ -84,7 +87,7 @@ class VaaniTheme {
           foregroundColor: Colors.white,
           minimumSize: const Size(48, 56),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(controlRadius),
           ),
           textStyle: const TextStyle(
             fontSize: 16,

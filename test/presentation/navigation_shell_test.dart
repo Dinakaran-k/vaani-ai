@@ -40,4 +40,31 @@ void main() {
     expect(find.text('Amul Milk 1L'), findsOneWidget);
     expect(find.text('Basmati Rice'), findsNothing);
   });
+
+  testWidgets('global search opens scanner inside app shell', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    final router = container.read(routerProvider)..go('/home');
+
+    await tester.pumpWidget(
+      MaterialApp.router(
+        theme: VaaniTheme.light(),
+        routerConfig: router,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Search'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Scan invoice'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Invoice Scanner'), findsOneWidget);
+    expect(find.text('Review Invoice'), findsOneWidget);
+  });
 }

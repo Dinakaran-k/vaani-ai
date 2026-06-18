@@ -8,15 +8,17 @@ class VaaniAppHeader extends StatelessWidget {
     super.key,
     this.subtitle = 'Smart Inventory',
     this.showSearch = true,
+    this.padding = const EdgeInsets.fromLTRB(20, 12, 20, 8),
   });
 
   final String subtitle;
   final bool showSearch;
+  final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+      padding: padding,
       child: Row(
         children: [
           const VaaniLogo(size: 48),
@@ -122,17 +124,18 @@ class VaaniCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: color,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(VaaniTheme.radius),
       clipBehavior: Clip.antiAlias,
       child: Container(
         padding: padding,
         decoration: BoxDecoration(
           border: Border.all(color: const Color(0xFFE2E0EE)),
+          borderRadius: BorderRadius.circular(VaaniTheme.radius),
           boxShadow: [
             BoxShadow(
-              color: VaaniTheme.primary.withValues(alpha: 0.06),
-              blurRadius: 24,
-              offset: const Offset(0, 10),
+              color: VaaniTheme.primary.withValues(alpha: 0.035),
+              blurRadius: 14,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
@@ -249,7 +252,9 @@ Future<void> showVaaniSearchSheet(BuildContext context) {
     isScrollControlled: true,
     backgroundColor: VaaniTheme.surface,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(VaaniTheme.sheetRadius),
+      ),
     ),
     builder: (sheetContext) => _VaaniSearchSheet(rootContext: context),
   );
@@ -282,46 +287,54 @@ class _VaaniSearchSheetState extends State<_VaaniSearchSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        24,
-        8,
-        24,
-        24 + MediaQuery.viewInsetsOf(context).bottom,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Search Vaani', style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 14),
-          TextField(
-            controller: _controller,
-            autofocus: true,
-            decoration: const InputDecoration(
-              hintText: 'Search stock, scanner, settings...',
-              prefixIcon: Icon(Icons.search_rounded),
-            ),
-            onSubmitted: (value) {
-              Navigator.of(context).pop();
-              showVaaniSnackBar(widget.rootContext, 'Searching for "$value"');
-            },
-          ),
-          const SizedBox(height: 18),
-          for (final suggestion in _suggestions)
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: CircleAvatar(child: Icon(suggestion.$2)),
-              title: Text(suggestion.$1),
-              trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: () {
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          20,
+          8,
+          20,
+          20 + MediaQuery.viewInsetsOf(context).bottom,
+        ),
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Text('Search Vaani', style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 14),
+            TextField(
+              controller: _controller,
+              autofocus: true,
+              decoration: const InputDecoration(
+                hintText: 'Search stock, scanner, settings...',
+                prefixIcon: Icon(Icons.search_rounded),
+              ),
+              onSubmitted: (value) {
                 Navigator.of(context).pop();
-                widget.rootContext.go(suggestion.$3);
+                showVaaniSnackBar(widget.rootContext, 'Searching for "$value"');
               },
             ),
-        ],
+            const SizedBox(height: 14),
+            for (final suggestion in _suggestions)
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: CircleAvatar(child: Icon(suggestion.$2)),
+                title: Text(suggestion.$1),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () => _openSuggestion(context, suggestion.$3),
+              ),
+          ],
+        ),
       ),
     );
+  }
+
+  void _openSuggestion(BuildContext context, String route) {
+    Navigator.of(context).pop();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.rootContext.mounted) {
+        widget.rootContext.go(route);
+      }
+    });
   }
 }
 
@@ -333,7 +346,7 @@ void showVaaniSnackBar(BuildContext context, String message) {
         behavior: SnackBarBehavior.floating,
         content: Text(message),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(VaaniTheme.controlRadius),
         ),
       ),
     );
@@ -355,41 +368,49 @@ Future<void> showVaaniLanguageSheet(BuildContext context) {
     isScrollControlled: true,
     backgroundColor: VaaniTheme.surface,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(VaaniTheme.sheetRadius),
+      ),
     ),
     builder: (sheetContext) {
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
-        child: SizedBox(
-          height: MediaQuery.sizeOf(sheetContext).height * 0.62,
-          child: ListView(
-            children: [
-              Text(
-                'Voice Language',
-                style: Theme.of(sheetContext).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 12),
-              for (final language in languages)
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: CircleAvatar(
-                    backgroundColor: VaaniTheme.primaryContainer,
-                    child: Text(language.$1.characters.first),
-                  ),
-                  title: Text(language.$1),
-                  subtitle: Text(language.$2),
-                  trailing: language.$1 == 'English'
-                      ? const Icon(
-                          Icons.check_circle,
-                          color: VaaniTheme.primary,
-                        )
-                      : null,
-                  onTap: () {
-                    Navigator.of(sheetContext).pop();
-                    showVaaniSnackBar(rootContext, '${language.$1} selected');
-                  },
+      return SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+          child: SizedBox(
+            height: MediaQuery.sizeOf(sheetContext).height * 0.62,
+            child: ListView(
+              children: [
+                Text(
+                  'Voice Language',
+                  style: Theme.of(sheetContext).textTheme.titleLarge,
                 ),
-            ],
+                const SizedBox(height: 12),
+                for (final language in languages)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: CircleAvatar(
+                      backgroundColor: VaaniTheme.primaryContainer,
+                      child: Text(language.$1.characters.first),
+                    ),
+                    title: Text(language.$1),
+                    subtitle: Text(language.$2),
+                    trailing: language.$1 == 'English'
+                        ? const Icon(
+                            Icons.check_circle,
+                            color: VaaniTheme.primary,
+                          )
+                        : null,
+                    onTap: () {
+                      Navigator.of(sheetContext).pop();
+                      showVaaniSnackBar(
+                        rootContext,
+                        '${language.$1} selected',
+                      );
+                    },
+                  ),
+              ],
+            ),
           ),
         ),
       );

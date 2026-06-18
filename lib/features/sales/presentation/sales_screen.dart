@@ -36,7 +36,10 @@ class _SalesScreenState extends State<SalesScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            const VaaniAppHeader(subtitle: 'Business Insights'),
+            const VaaniAppHeader(
+              subtitle: 'Business Insights',
+              padding: EdgeInsets.zero,
+            ),
             const SizedBox(height: 16),
             Row(
               children: [
@@ -228,7 +231,7 @@ class _TopProduct extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(VaaniTheme.radius),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onTap,

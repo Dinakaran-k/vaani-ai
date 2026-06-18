@@ -19,6 +19,7 @@ class _OcrScreenState extends State<OcrScreen> {
   var _cameraState = _ScannerCameraState.loading;
   var _scanning = false;
   var _flashOn = false;
+  var _queuedItemCount = 0;
   final _invoiceItems = <_InvoiceItemUi>[
     _InvoiceItemUi(
       icon: Icons.shopping_bag_outlined,
@@ -127,9 +128,13 @@ class _OcrScreenState extends State<OcrScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Confirm extracted items before they touch inventory.',
+                        _queuedItemCount > 0
+                            ? '$_queuedItemCount items are ready in the inventory queue.'
+                            : 'Confirm extracted items before they touch inventory.',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: VaaniTheme.onSurfaceVariant,
+                              color: _queuedItemCount > 0
+                                  ? VaaniTheme.secondary
+                                  : VaaniTheme.onSurfaceVariant,
                             ),
                       ),
                       const SizedBox(height: 18),
@@ -157,12 +162,15 @@ class _OcrScreenState extends State<OcrScreen> {
                             child: FilledButton.icon(
                               onPressed: selectedCount == 0
                                   ? null
-                                  : () => showVaaniSnackBar(
-                                        context,
-                                        '$selectedCount items queued for inventory',
-                                      ),
-                              icon: const Icon(Icons.add_business_outlined),
-                              label: const Text('Add items'),
+                                  : () => _queueSelectedItems(selectedCount),
+                              icon: Icon(
+                                _queuedItemCount > 0
+                                    ? Icons.check_circle_outline
+                                    : Icons.add_business_outlined,
+                              ),
+                              label: Text(
+                                _queuedItemCount > 0 ? 'Queued' : 'Add items',
+                              ),
                             ),
                           ),
                         ],
@@ -237,6 +245,11 @@ class _OcrScreenState extends State<OcrScreen> {
       }
     });
     showVaaniSnackBar(context, 'Invoice scan refreshed');
+  }
+
+  void _queueSelectedItems(int selectedCount) {
+    setState(() => _queuedItemCount = selectedCount);
+    showVaaniSnackBar(context, '$selectedCount items queued for inventory');
   }
 }
 

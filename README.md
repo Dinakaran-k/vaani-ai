@@ -28,7 +28,7 @@ Implemented so far:
 - Firebase Firestore and Storage security rules.
 - CI workflow for format, analyze, tests, debug APK builds, and guarded Firebase rule deployment.
 - Supporting project summary, problem statement, AI features, architecture, testing strategy, project structure, and DevOps documentation.
-- Unit, navigation-state, compact-viewport, and mobile-flow widget tests for AI, domain, onboarding, login, voice, inventory, scanner, sales, payments, settings, and tab-state behavior.
+- Unit, navigation-state, compact-viewport, and mobile-flow widget tests for AI, domain, onboarding, login, voice, inventory, scanner, sales, payments, settings, global search, scanner queue state, and tab-state behavior.
 
 Still required before production:
 
@@ -74,7 +74,7 @@ Onboarding -> Home Dashboard -> Voice Assistant -> Inventory / Scanner / Udhaar 
 - Bottom navigation preserves tab state while moving between home, stock, voice, scanner, and settings.
 - Inventory search, filters, add-product, and stock updates use local state with bottom sheet patterns for quick in-place edits.
 - The scanner screen uses a live camera preview when available, with a fallback preview and selectable review sheet before inventory creation.
-- Payments, sales, settings, voice, and global search actions all open visible flows or update local UI state.
+- Payments, sales, settings, voice, scanner review, and global search actions all open visible flows or update local UI state.
 
 ## Tech Stack
 
@@ -209,7 +209,7 @@ firebase deploy --only firestore:rules,firestore:indexes,storage:rules
 
 ## Verification
 
-Last verified locally on 2026-06-16:
+Last verified locally on 2026-06-18:
 
 ```text
 dart format lib test

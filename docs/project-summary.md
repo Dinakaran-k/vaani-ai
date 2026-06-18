@@ -30,12 +30,12 @@ Small merchants often manage business operations through paper notes, spreadshee
 - Voice assistant entrypoint with speech-to-text and text-to-speech abstractions.
 - AI intent classification with deterministic shortcuts and remote AI client wrappers.
 - Inventory domain model, Firestore repository, search, filters, add-product flow, and stock update workflows with local interactions.
-- Camera-first invoice scanner UI, OCR review selection, and OCR result model.
+- Camera-first invoice scanner UI, OCR review selection, local queue feedback, and OCR result model.
 - Payment reminder model, filters, due detail sheet, and reminder state updates.
 - Sales domain model, analytics period filters, sale draft action, and tappable product insights.
 - Offline sync queue foundation.
 - Firebase security rules and indexes.
-- Unit, navigation-state, compact-viewport, and mobile-flow widget tests.
+- Unit, navigation-state, compact-viewport, and mobile-flow widget tests, including scanner queue and shell search routing coverage.
 
 ## Technology Stack
 

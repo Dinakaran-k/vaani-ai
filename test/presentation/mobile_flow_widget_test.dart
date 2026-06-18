@@ -220,6 +220,11 @@ void main() {
         scrollable: find.byType(Scrollable).last,
       );
       expect(find.text('Add items'), findsOneWidget);
+      await tester.tap(find.widgetWithText(FilledButton, 'Add items'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Queued'), findsOneWidget);
+      expect(find.text('2 items queued for inventory'), findsOneWidget);
     });
 
     testWidgets(

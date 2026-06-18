@@ -58,7 +58,10 @@ class _PaymentRemindersScreenState extends State<PaymentRemindersScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            const VaaniAppHeader(subtitle: 'Udhaar Reminders'),
+            const VaaniAppHeader(
+              subtitle: 'Udhaar Reminders',
+              padding: EdgeInsets.zero,
+            ),
             const SizedBox(height: 14),
             VaaniCard(
               child: Column(
@@ -107,7 +110,7 @@ class _PaymentRemindersScreenState extends State<PaymentRemindersScreen> {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(VaaniTheme.radius),
                 border: const Border(
                   left: BorderSide(color: VaaniTheme.secondary, width: 5),
                 ),
@@ -293,7 +296,7 @@ class _DueCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(VaaniTheme.radius),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,

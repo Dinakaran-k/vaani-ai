@@ -11,4 +11,4 @@ Required suites:
 - Security rule tests for business membership boundaries.
 - AI workflow tests using recorded schema-valid responses.
 
-The current suite includes domain, AI intent, navigation-state, compact-viewport, and mobile-flow widget tests covering onboarding, login, voice, inventory, scanner, sales, payments, settings, global search, and bottom-tab state preservation. Emulator, integration, golden, and accessibility suites should be added after Firebase project configuration is generated.
+The current suite includes domain, AI intent, navigation-state, compact-viewport, and mobile-flow widget tests covering onboarding, login, voice, inventory, scanner review and queue state, sales, payments, settings, global search routing inside the app shell, and bottom-tab state preservation. Emulator, integration, golden, and accessibility suites should be added after Firebase project configuration is generated.
