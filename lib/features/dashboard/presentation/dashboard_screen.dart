@@ -56,14 +56,14 @@ class DashboardScreen extends StatelessWidget {
                         icon: Icons.document_scanner_outlined,
                         title: 'Scanner',
                         subtitle: 'Invoice OCR',
-                        color: const Color(0xFFFFDCC5),
+                        color: Theme.of(context).colorScheme.tertiaryContainer,
                         onTap: () => context.go('/ocr'),
                       ),
                       _OperationItem(
                         icon: Icons.currency_rupee_rounded,
                         title: 'Udhaar',
                         subtitle: 'Payment dues',
-                        color: const Color(0xFFFFDAD6),
+                        color: Theme.of(context).colorScheme.errorContainer,
                         onTap: () => context.go('/payments'),
                       ),
                     ],
@@ -141,7 +141,9 @@ class _SalesSummaryCard extends StatelessWidget {
                         alignment: Alignment.bottomCenter,
                         child: Container(
                           decoration: BoxDecoration(
-                            gradient: VaaniTheme.aiGradient,
+                            gradient: VaaniTheme.aiGradientFor(
+                              Theme.of(context).brightness,
+                            ),
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
@@ -162,10 +164,11 @@ class _AiInsightCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: scheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(20),
         border: const Border(
           left: BorderSide(color: VaaniTheme.secondary, width: 5),
@@ -206,13 +209,14 @@ class _VoiceCommandCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return InkWell(
       borderRadius: BorderRadius.circular(28),
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(22),
         decoration: BoxDecoration(
-          gradient: VaaniTheme.aiGradient,
+          gradient: VaaniTheme.aiGradientFor(Theme.of(context).brightness),
           borderRadius: BorderRadius.circular(28),
           boxShadow: [
             BoxShadow(
@@ -229,11 +233,10 @@ class _VoiceCommandCard extends StatelessWidget {
               height: 74,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.20),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.44)),
+                color: scheme.onPrimary.withValues(alpha: 0.20),
+                border: Border.all(color: scheme.onPrimary.withValues(alpha: 0.44)),
               ),
-              child:
-                  const Icon(Icons.mic_rounded, color: Colors.white, size: 34),
+              child: Icon(Icons.mic_rounded, color: scheme.onPrimary, size: 34),
             ),
             const SizedBox(width: 18),
             Expanded(
@@ -243,18 +246,18 @@ class _VoiceCommandCard extends StatelessWidget {
                   Text(
                     'Ask Vaani',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: Colors.white,
+                          color: scheme.onPrimary,
                         ),
                   ),
                   const SizedBox(height: 6),
-                  const Text(
+                  Text(
                     'Try: Add 20 bags rice',
-                    style: TextStyle(color: Color(0xFFEFFDF8)),
+                    style: TextStyle(color: scheme.onPrimary.withValues(alpha: 0.88)),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_rounded, color: Colors.white),
+            Icon(Icons.arrow_forward_rounded, color: scheme.onPrimary),
           ],
         ),
       ),

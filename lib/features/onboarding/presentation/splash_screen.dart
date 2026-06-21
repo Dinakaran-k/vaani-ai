@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive/hive.dart';
 
-import '../../../app/theme.dart';
 import '../../../shared/presentation/vaani_motion.dart';
 import '../../../shared/presentation/vaani_shell.dart';
 
@@ -24,7 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
     _timer = Timer(const Duration(milliseconds: 1450), () async {
       final settings = await Hive.openBox<Object?>('settings');
       final completed = settings.get('onboardingComplete') == true;
-      if (mounted) context.go(completed ? '/home' : '/onboarding');
+      if (mounted) context.go(completed ? '/login' : '/onboarding');
     });
   }
 
@@ -36,13 +35,17 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: RadialGradient(
             center: Alignment.topRight,
             radius: 1.2,
-            colors: [Color(0xFFDDF7EF), VaaniTheme.surface],
+            colors: [
+              scheme.primaryContainer.withValues(alpha: 0.55),
+              scheme.surface,
+            ],
           ),
         ),
         child: Stack(
@@ -54,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen> {
               child: Container(
                 height: 180,
                 decoration: BoxDecoration(
-                  color: VaaniTheme.primaryContainer.withValues(alpha: 0.55),
+                  color: scheme.primaryContainer.withValues(alpha: 0.55),
                   borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(140),
                     bottomRight: Radius.circular(220),
@@ -74,14 +77,14 @@ class _SplashScreenState extends State<SplashScreen> {
                   Text(
                     'Vaani AI',
                     style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                          color: VaaniTheme.primary,
+                          color: scheme.primary,
                         ),
                   ),
                   const SizedBox(height: 18),
                   Text(
                     'aapka vyapar, aapki awaaz',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: VaaniTheme.onSurfaceVariant,
+                          color: scheme.onSurfaceVariant,
                           fontWeight: FontWeight.w500,
                         ),
                   ),
@@ -89,7 +92,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   Text(
                     'YOUR BUSINESS, YOUR VOICE',
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          color: const Color(0xFF7C7A8A),
+                          color: scheme.onSurfaceVariant,
                           letterSpacing: 1.8,
                         ),
                   ),
@@ -128,7 +131,9 @@ class _Dot extends StatelessWidget {
       height: 10,
       margin: const EdgeInsets.symmetric(horizontal: 5),
       decoration: BoxDecoration(
-        color: active ? VaaniTheme.primary : const Color(0xFFC0C1FF),
+        color: active
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).colorScheme.outlineVariant,
         borderRadius: BorderRadius.circular(20),
       ),
     );

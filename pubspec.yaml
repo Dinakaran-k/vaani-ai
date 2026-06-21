@@ -53,3 +53,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/models/custom_intent_model.json

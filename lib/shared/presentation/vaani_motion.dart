@@ -203,6 +203,7 @@ class _WaveBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 120),
       curve: Curves.easeOutCubic,
@@ -210,7 +211,7 @@ class _WaveBar extends StatelessWidget {
       height: height,
       margin: margin,
       decoration: BoxDecoration(
-        gradient: VaaniTheme.aiGradient,
+        gradient: VaaniTheme.aiGradientFor(brightness),
         borderRadius: BorderRadius.circular(width),
       ),
     );

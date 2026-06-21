@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/theme.dart';
+import '../../../features/ai/application/melange_providers.dart';
 import '../../../shared/presentation/vaani_shell.dart';
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   var _selectedLanguage = 'English';
   var _voiceFeedback = true;
   var _heyVaani = false;
@@ -35,19 +37,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
             VaaniCard(
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'Rajesh Kumar',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w800,
-                          ),
+                          style: Theme.of(context).textTheme.titleLarge,
                         ),
-                        SizedBox(height: 6),
-                        Text('Kumar Provisions - +91 98765 43210'),
+                        const SizedBox(height: 6),
+                        const Text('Kumar Provisions - +91 98765 43210'),
                       ],
                     ),
                   ),
@@ -58,7 +57,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 28),
             const _SectionHeader(
               icon: Icons.language_rounded,
               title: 'App Language',
@@ -127,6 +125,86 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             const SizedBox(height: 28),
+            const _SectionHeader(
+              icon: Icons.memory_rounded,
+              title: 'Melange Models',
+            ),
+            const SizedBox(height: 14),
+            FutureBuilder<Map<String, Object?>>(
+              future: ref.watch(melangeModelsProvider.future),
+              builder: (context, snapshot) {
+                final data = snapshot.data ?? const {};
+                return VaaniCard(
+                  padding: EdgeInsets.zero,
+                  child: Column(
+                    children: [
+                      ListTile(
+                        title: const Text('Voice intent model'),
+                        subtitle: Text(
+                          data['voiceIntentModel'] as String? ??
+                              'google/gemma-3n-E2B-it',
+                        ),
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
+                        title: const Text('Invoice model'),
+                        subtitle: Text(
+                          data['invoiceModel'] as String? ?? 'Menlo/Jan-nano',
+                        ),
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
+                        title: const Text('Whisper encoder'),
+                        subtitle: Text(
+                          data['asrEncoderModel'] as String? ??
+                              'vaibhav-zetic/whisper_small_encoder',
+                        ),
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
+                        title: const Text('Whisper decoder'),
+                        subtitle: Text(
+                          data['asrDecoderModel'] as String? ??
+                              'OpenAI/whisper-tiny-decoder',
+                        ),
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
+                        title: const Text('Legacy speech model'),
+                        subtitle: Text(
+                          data['asrModel'] as String? ??
+                              'vaibhav-zetic/whisper_small_encoder',
+                        ),
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
+                        title: const Text('Language model'),
+                        subtitle: Text(
+                          data['languageModel'] as String? ??
+                              'SentenceTransformers/nli-MiniLM2-L6-H768',
+                        ),
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
+                        title: const Text('Inventory model'),
+                        subtitle: Text(
+                          data['inventoryModel'] as String? ??
+                              'Qwen/Qwen3-Reranker-0.6B',
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Melange keeps the primary AI path on-device. The voice assistant uses the selected intent model, the scanner uses the invoice model, and Whisper is wired as an encoder/decoder pair for the future audio bridge.',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: VaaniTheme.onSurfaceVariant,
+                  ),
+            ),
+            const SizedBox(height: 28),
             Text(
               'Help & Support',
               style: Theme.of(context).textTheme.titleLarge,
@@ -161,58 +239,63 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _showProfileSheet() {
     final rootContext = context;
+    final scheme = Theme.of(context).colorScheme;
     final ownerController = TextEditingController(text: 'Rajesh Kumar');
     final shopController = TextEditingController(text: 'Kumar Provisions');
     return showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
       isScrollControlled: true,
-      backgroundColor: VaaniTheme.surface,
+      useSafeArea: true,
+      backgroundColor: scheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (sheetContext) {
-        return Padding(
-          padding: EdgeInsets.fromLTRB(
-            24,
-            8,
-            24,
-            28 + MediaQuery.viewInsetsOf(sheetContext).bottom,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Edit Profile',
-                style: Theme.of(sheetContext).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 14),
-              TextField(
-                controller: ownerController,
-                decoration: const InputDecoration(
-                  labelText: 'Owner name',
-                  prefixIcon: Icon(Icons.person_outline),
+        return SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(
+              24,
+              8,
+              24,
+              28 + MediaQuery.viewInsetsOf(sheetContext).bottom,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Edit Profile',
+                  style: Theme.of(sheetContext).textTheme.titleLarge,
                 ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: shopController,
-                decoration: const InputDecoration(
-                  labelText: 'Business name',
-                  prefixIcon: Icon(Icons.storefront_outlined),
+                const SizedBox(height: 14),
+                TextField(
+                  controller: ownerController,
+                  decoration: const InputDecoration(
+                    labelText: 'Owner name',
+                    prefixIcon: Icon(Icons.person_outline),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              FilledButton.icon(
-                onPressed: () {
-                  Navigator.of(sheetContext).pop();
-                  showVaaniSnackBar(rootContext, 'Profile saved locally');
-                },
-                icon: const Icon(Icons.save_outlined),
-                label: const Text('Save profile'),
-              ),
-            ],
+                const SizedBox(height: 12),
+                TextField(
+                  controller: shopController,
+                  decoration: const InputDecoration(
+                    labelText: 'Business name',
+                    prefixIcon: Icon(Icons.storefront_outlined),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                FilledButton.icon(
+                  onPressed: () {
+                    Navigator.of(sheetContext).pop();
+                    showVaaniSnackBar(rootContext, 'Profile saved locally');
+                  },
+                  icon: const Icon(Icons.save_outlined),
+                  label: const Text('Save profile'),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -223,38 +306,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _showTutorialSheet() {
+    final scheme = Theme.of(context).colorScheme;
     return showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      backgroundColor: VaaniTheme.surface,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: scheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (sheetContext) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Quick Tutorial',
-                style: Theme.of(sheetContext).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 14),
-              const _TutorialStep(
-                '1',
-                'Use Voice to update stock or ask for reports.',
-              ),
-              const _TutorialStep(
-                '2',
-                'Scan invoices, review extracted items, then add them.',
-              ),
-              const _TutorialStep(
-                '3',
-                'Track Udhaar and prepare reminders from Payments.',
-              ),
-            ],
+        return SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Quick Tutorial',
+                  style: Theme.of(sheetContext).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 14),
+                const _TutorialStep(
+                  '1',
+                  'Use Voice to update stock or ask for reports.',
+                ),
+                const _TutorialStep(
+                  '2',
+                  'Scan invoices, review extracted items, then add them.',
+                ),
+                const _TutorialStep(
+                  '3',
+                  'Track Udhaar and prepare reminders from Payments.',
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -263,46 +352,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _showSupportSheet() {
     final rootContext = context;
+    final scheme = Theme.of(context).colorScheme;
     return showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      backgroundColor: VaaniTheme.surface,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: scheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (sheetContext) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Contact Support',
-                style: Theme.of(sheetContext).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 14),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const CircleAvatar(child: Icon(Icons.chat_outlined)),
-                title: const Text('Start support chat'),
-                subtitle: const Text('Usually replies within one business day'),
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  showVaaniSnackBar(rootContext, 'Support chat started');
-                },
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const CircleAvatar(child: Icon(Icons.mail_outline)),
-                title: const Text('Email support'),
-                subtitle: const Text('support@vaani.ai'),
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  showVaaniSnackBar(rootContext, 'Support email prepared');
-                },
-              ),
-            ],
+        return SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Contact Support',
+                  style: Theme.of(sheetContext).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 14),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const CircleAvatar(child: Icon(Icons.chat_outlined)),
+                  title: const Text('Start support chat'),
+                  subtitle:
+                      const Text('Usually replies within one business day'),
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    showVaaniSnackBar(rootContext, 'Support chat started');
+                  },
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const CircleAvatar(child: Icon(Icons.mail_outline)),
+                  title: const Text('Email support'),
+                  subtitle: const Text('support@vaani.ai'),
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    showVaaniSnackBar(rootContext, 'Support email prepared');
+                  },
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -340,9 +436,10 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Row(
       children: [
-        Icon(icon, color: VaaniTheme.primary),
+        Icon(icon, color: scheme.primary),
         const SizedBox(width: 10),
         Expanded(
           child: Text(
@@ -376,20 +473,25 @@ class _LanguageGrid extends StatelessWidget {
     ];
     return LayoutBuilder(
       builder: (context, constraints) {
-        final width = (constraints.maxWidth - 14) / 2;
-        return Wrap(
-          spacing: 14,
-          runSpacing: 14,
+        final columns = constraints.maxWidth >= 920
+            ? 4
+            : constraints.maxWidth >= 620
+                ? 3
+                : 2;
+        return GridView.count(
+          crossAxisCount: columns,
+          crossAxisSpacing: 14,
+          mainAxisSpacing: 14,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisExtent: columns >= 3 ? 84 : 92,
           children: [
             for (final language in languages)
-              SizedBox(
-                width: width,
-                child: _LanguageTile(
-                  title: language.$1,
-                  subtitle: language.$2,
-                  selected: language.$1 == selectedLanguage,
-                  onTap: () => onSelected(language.$1),
-                ),
+              _LanguageTile(
+                title: language.$1,
+                subtitle: language.$2,
+                selected: language.$1 == selectedLanguage,
+                onTap: () => onSelected(language.$1),
               ),
           ],
         );
@@ -413,8 +515,10 @@ class _LanguageTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Material(
-      color: selected ? VaaniTheme.primaryContainer : Colors.white,
+      color:
+          selected ? scheme.primaryContainer : scheme.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(18),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -424,7 +528,7 @@ class _LanguageTile extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: selected ? VaaniTheme.primary : const Color(0xFFC7C4D7),
+              color: selected ? scheme.primary : scheme.outlineVariant,
               width: selected ? 2 : 1,
             ),
           ),
@@ -438,17 +542,16 @@ class _LanguageTile extends StatelessWidget {
                       title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleLarge,
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
-                  if (selected)
-                    const Icon(Icons.check_circle, color: VaaniTheme.primary),
+                  if (selected) Icon(Icons.check_circle, color: scheme.primary),
                 ],
               ),
               const SizedBox(height: 6),
               Text(
                 subtitle,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: VaaniTheme.onSurfaceVariant,
                     ),
               ),

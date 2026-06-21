@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/theme.dart';
+import '../../core/localization/supported_language.dart';
 
 class VaaniAppHeader extends StatelessWidget {
   const VaaniAppHeader({
@@ -31,7 +32,7 @@ class VaaniAppHeader extends StatelessWidget {
                 Text(
                   subtitle,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: VaaniTheme.onSurfaceVariant,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                 ),
               ],
@@ -64,12 +65,13 @@ class VaaniLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: VaaniTheme.aiGradient,
+        gradient: VaaniTheme.aiGradientFor(Theme.of(context).brightness),
         boxShadow: [
           BoxShadow(
             color: VaaniTheme.primary.withValues(alpha: 0.24),
@@ -82,13 +84,13 @@ class VaaniLogo extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            Icon(Icons.mic_rounded, color: Colors.white, size: size * 0.38),
+            Icon(Icons.mic_rounded, color: scheme.onPrimary, size: size * 0.38),
             Positioned(
               left: size * 0.28,
               top: size * 0.22,
               child: Icon(
                 Icons.auto_awesome_rounded,
-                color: Colors.white.withValues(alpha: 0.95),
+                color: scheme.onPrimary.withValues(alpha: 0.95),
                 size: size * 0.16,
               ),
             ),
@@ -97,7 +99,7 @@ class VaaniLogo extends StatelessWidget {
               bottom: size * 0.26,
               child: Icon(
                 Icons.auto_awesome_rounded,
-                color: Colors.white.withValues(alpha: 0.95),
+                color: scheme.onPrimary.withValues(alpha: 0.95),
                 size: size * 0.13,
               ),
             ),
@@ -113,23 +115,25 @@ class VaaniCard extends StatelessWidget {
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(20),
-    this.color = Colors.white,
+    this.color,
   });
 
   final Widget child;
   final EdgeInsetsGeometry padding;
-  final Color color;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final effectiveColor = color ?? scheme.surfaceContainerHighest;
     return Material(
-      color: color,
+      color: effectiveColor,
       borderRadius: BorderRadius.circular(VaaniTheme.radius),
       clipBehavior: Clip.antiAlias,
       child: Container(
         padding: padding,
         decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xFFE2E0EE)),
+          border: Border.all(color: scheme.outlineVariant),
           borderRadius: BorderRadius.circular(VaaniTheme.radius),
           boxShadow: [
             BoxShadow(
@@ -246,11 +250,12 @@ class VaaniBottomNav extends StatelessWidget {
 }
 
 Future<void> showVaaniSearchSheet(BuildContext context) {
+  final scheme = Theme.of(context).colorScheme;
   return showModalBottomSheet<void>(
     context: context,
     showDragHandle: true,
     isScrollControlled: true,
-    backgroundColor: VaaniTheme.surface,
+    backgroundColor: scheme.surface,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(
         top: Radius.circular(VaaniTheme.sheetRadius),
@@ -352,21 +357,25 @@ void showVaaniSnackBar(BuildContext context, String message) {
     );
 }
 
-Future<void> showVaaniLanguageSheet(BuildContext context) {
+Future<SupportedLanguage?> showVaaniLanguageSheet(
+  BuildContext context, {
+  SupportedLanguage selectedLanguage = SupportedLanguage.english,
+}) {
   final rootContext = context;
+  final scheme = Theme.of(context).colorScheme;
   const languages = [
-    ('English', 'Default'),
-    ('Hindi', 'Hindi'),
-    ('Tamil', 'Tamil'),
-    ('Telugu', 'Telugu'),
-    ('Marathi', 'Marathi'),
-    ('Gujarati', 'Gujarati'),
+    (SupportedLanguage.english, 'Default'),
+    (SupportedLanguage.hindi, 'Hindi'),
+    (SupportedLanguage.tamil, 'Tamil'),
+    (SupportedLanguage.telugu, 'Telugu'),
+    (SupportedLanguage.marathi, 'Marathi'),
+    (SupportedLanguage.gujarati, 'Gujarati'),
   ];
-  return showModalBottomSheet<void>(
+  return showModalBottomSheet<SupportedLanguage?>(
     context: context,
     showDragHandle: true,
     isScrollControlled: true,
-    backgroundColor: VaaniTheme.surface,
+    backgroundColor: scheme.surface,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(
         top: Radius.circular(VaaniTheme.sheetRadius),
@@ -390,22 +399,22 @@ Future<void> showVaaniLanguageSheet(BuildContext context) {
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: CircleAvatar(
-                      backgroundColor: VaaniTheme.primaryContainer,
-                      child: Text(language.$1.characters.first),
+                      backgroundColor: scheme.primaryContainer,
+                      child: Text(language.$1.label.characters.first),
                     ),
-                    title: Text(language.$1),
+                    title: Text(language.$1.label),
                     subtitle: Text(language.$2),
-                    trailing: language.$1 == 'English'
+                    trailing: language.$1 == selectedLanguage
                         ? const Icon(
                             Icons.check_circle,
                             color: VaaniTheme.primary,
                           )
                         : null,
                     onTap: () {
-                      Navigator.of(sheetContext).pop();
+                      Navigator.of(sheetContext).pop(language.$1);
                       showVaaniSnackBar(
                         rootContext,
-                        '${language.$1} selected',
+                        '${language.$1.label} selected',
                       );
                     },
                   ),

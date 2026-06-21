@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vaani_ai/app/theme.dart';
 import 'package:vaani_ai/features/auth/presentation/login_screen.dart';
 import 'package:vaani_ai/features/dashboard/presentation/dashboard_screen.dart';
@@ -55,9 +56,11 @@ void main() {
     );
 
     await tester.pumpWidget(
-      MaterialApp.router(
-        theme: VaaniTheme.light(),
-        routerConfig: router,
+      ProviderScope(
+        child: MaterialApp.router(
+          theme: VaaniTheme.light(),
+          routerConfig: router,
+        ),
       ),
     );
     await tester.pump(const Duration(milliseconds: 650));
@@ -91,19 +94,21 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
 
       await tester.pumpWidget(
-        MaterialApp(
-          theme: VaaniTheme.light(),
-          home: Builder(
-            builder: (context) {
-              return Scaffold(
-                body: Center(
-                  child: FilledButton(
-                    onPressed: () => showVoiceAssistantSheet(context),
-                    child: const Text('Ask Vaani'),
+        ProviderScope(
+          child: MaterialApp(
+            theme: VaaniTheme.light(),
+            home: Builder(
+              builder: (context) {
+                return Scaffold(
+                  body: Center(
+                    child: FilledButton(
+                      onPressed: () => showVoiceAssistantSheet(context),
+                      child: const Text('Ask Vaani'),
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       );
@@ -115,12 +120,10 @@ void main() {
       expect(find.text('How can I help your shop?'), findsOneWidget);
       expect(find.text('Listening'), findsOneWidget);
 
-      await tester.tap(find.text('Hold to speak'));
-      await tester.pump(const Duration(milliseconds: 350));
+      await tester.tap(find.byIcon(Icons.language_rounded));
+      await tester.pump(const Duration(milliseconds: 450));
 
-      expect(find.text('Finding the right action...'), findsOneWidget);
-      expect(find.text('Thinking'), findsOneWidget);
-      expect(find.text('Stop'), findsOneWidget);
+      expect(find.text('Voice Language'), findsOneWidget);
     });
 
     testWidgets('home exposes mobile section entry points', (
@@ -279,11 +282,11 @@ void main() {
       expect(find.text('REMINDED'), findsOneWidget);
     });
 
-    testWidgets('login demo entry opens home dashboard', (tester) async {
+    testWidgets('login workspace entry opens home dashboard', (tester) async {
       await pumpRoute(tester, '/login');
 
       expect(find.text('Welcome back'), findsOneWidget);
-      await tester.tap(find.text('Open demo business'));
+      await tester.tap(find.text('Open business workspace'));
       await tester.pumpAndSettle();
 
       expect(find.text('TODAY SALES'), findsOneWidget);

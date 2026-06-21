@@ -23,7 +23,9 @@ Implemented so far:
 - Sales analytics screen with period filters, sale draft action, export/share feedback, and tappable product insights.
 - Payment reminders screen with working filters, due detail sheet, and reminder state updates.
 - Settings profile, tutorial, support, and language actions with editable sheets.
-- AI intent classification layer with deterministic shortcuts and remote AI client wrappers.
+- AI intent classification layer with deterministic shortcuts, a custom on-device Vaani intent model, and remote AI client wrappers.
+- Flutter-first AI integration layer with Riverpod providers, a custom Vaani intent model, and a documented Melange deployment path for Android.
+- Android Melange bridge with Gradle property wiring and task-specific on-device model routing.
 - Offline sync queue foundation.
 - Firebase Firestore and Storage security rules.
 - CI workflow for format, analyze, tests, debug APK builds, and guarded Firebase rule deployment.
@@ -74,6 +76,7 @@ Onboarding -> Home Dashboard -> Voice Assistant -> Inventory / Scanner / Udhaar 
 - Bottom navigation preserves tab state while moving between home, stock, voice, scanner, and settings.
 - Inventory search, filters, add-product, and stock updates use local state with bottom sheet patterns for quick in-place edits.
 - The scanner screen uses a live camera preview when available, with a fallback preview and selectable review sheet before inventory creation.
+- The assistant also has a custom on-device intent model for common merchant commands before it falls back to Melange.
 - Payments, sales, settings, voice, scanner review, and global search actions all open visible flows or update local UI state.
 
 ## Tech Stack
@@ -130,6 +133,8 @@ For more detail, see:
 - [Project structure](docs/project-structure.md)
 - [Testing strategy](docs/testing.md)
 - [DevOps](docs/devops.md)
+- [Melange on-device plan](docs/melange-on-device-plan.md)
+- [Melange setup](docs/melange-setup.md)
 
 ## Getting Started
 

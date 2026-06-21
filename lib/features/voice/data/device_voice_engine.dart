@@ -1,5 +1,6 @@
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
 
 import '../../../core/localization/supported_language.dart';
 import '../domain/voice_engine.dart';
@@ -26,15 +27,26 @@ class DeviceVoiceEngine implements VoiceEngine {
     if (!ready) return '';
 
     var recognized = '';
+    var hasFinalResult = false;
     await _speech.listen(
       listenOptions: SpeechListenOptions(
         localeId: language.speechLocale,
         listenFor: timeout,
         partialResults: false,
       ),
-      onResult: (result) => recognized = result.recognizedWords,
+      onResult: (SpeechRecognitionResult result) {
+        recognized = result.recognizedWords;
+        hasFinalResult = result.finalResult;
+      },
     );
-    await Future<void>.delayed(timeout);
+    await Future.any([
+      Future<void>.delayed(timeout),
+      Future.doWhile(() async {
+        if (hasFinalResult) return false;
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+        return !hasFinalResult;
+      }),
+    ]);
     await _speech.stop();
     return recognized.trim();
   }

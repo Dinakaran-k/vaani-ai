@@ -109,7 +109,7 @@ class _PaymentRemindersScreenState extends State<PaymentRemindersScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(VaaniTheme.radius),
                 border: const Border(
                   left: BorderSide(color: VaaniTheme.secondary, width: 5),
@@ -190,50 +190,56 @@ class _PaymentRemindersScreenState extends State<PaymentRemindersScreen> {
 
   Future<void> _showDueDetails(_DueUi due) {
     final rootContext = context;
+    final scheme = Theme.of(context).colorScheme;
     return showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      backgroundColor: VaaniTheme.surface,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: scheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (sheetContext) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                due.name,
-                style: Theme.of(sheetContext).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 8),
-              Text(due.phone),
-              const SizedBox(height: 18),
-              VaaniCard(
-                child: Row(
-                  children: [
-                    const Icon(Icons.currency_rupee_rounded),
-                    const SizedBox(width: 12),
-                    Text(
-                      'Rs ${_formatAmount(due.amount)} due',
-                      style: Theme.of(sheetContext).textTheme.titleMedium,
-                    ),
-                  ],
+        return SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  due.name,
+                  style: Theme.of(sheetContext).textTheme.titleLarge,
                 ),
-              ),
-              const SizedBox(height: 18),
-              FilledButton.icon(
-                onPressed: () {
-                  Navigator.of(sheetContext).pop();
-                  if (!rootContext.mounted) return;
-                  _markReminded(due);
-                },
-                icon: const Icon(Icons.message_outlined),
-                label: Text(due.reminded ? 'Send again' : 'Prepare reminder'),
-              ),
-            ],
+                const SizedBox(height: 8),
+                Text(due.phone),
+                const SizedBox(height: 18),
+                VaaniCard(
+                  child: Row(
+                    children: [
+                      const Icon(Icons.currency_rupee_rounded),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Rs ${_formatAmount(due.amount)} due',
+                        style: Theme.of(sheetContext).textTheme.titleMedium,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 18),
+                FilledButton.icon(
+                  onPressed: () {
+                    Navigator.of(sheetContext).pop();
+                    if (!rootContext.mounted) return;
+                    _markReminded(due);
+                  },
+                  icon: const Icon(Icons.message_outlined),
+                  label: Text(due.reminded ? 'Send again' : 'Prepare reminder'),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -262,18 +268,19 @@ class _DueFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: ChoiceChip(
         label: Text(label),
         selected: selected,
         onSelected: (_) => onSelected(),
-        backgroundColor: selected ? VaaniTheme.primaryContainer : Colors.white,
+        backgroundColor: selected ? scheme.primaryContainer : scheme.surface,
         side: BorderSide(
-          color: selected ? VaaniTheme.primary : const Color(0xFFC7C4D7),
+          color: selected ? scheme.primary : scheme.outlineVariant,
         ),
         labelStyle: TextStyle(
-          color: selected ? VaaniTheme.primary : VaaniTheme.onSurface,
+          color: selected ? scheme.primary : scheme.onSurface,
           fontWeight: FontWeight.w800,
         ),
       ),
@@ -294,6 +301,7 @@ class _DueCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(VaaniTheme.radius),
@@ -308,14 +316,12 @@ class _DueCard extends StatelessWidget {
                   CircleAvatar(
                     radius: 28,
                     backgroundColor: due.urgent
-                        ? const Color(0xFFFFDAD6)
-                        : VaaniTheme.primaryContainer,
+                        ? scheme.errorContainer
+                        : scheme.primaryContainer,
                     child: Text(
                       due.initial,
                       style: TextStyle(
-                        color: due.urgent
-                            ? Theme.of(context).colorScheme.error
-                            : VaaniTheme.primary,
+                        color: due.urgent ? scheme.error : scheme.primary,
                         fontSize: 24,
                         fontWeight: FontWeight.w800,
                       ),
@@ -342,8 +348,8 @@ class _DueCard extends StatelessWidget {
                               label:
                                   Text(due.reminded ? 'REMINDED' : due.status),
                               backgroundColor: due.urgent
-                                  ? const Color(0xFFFFDAD6)
-                                  : VaaniTheme.surfaceContainer,
+                                  ? scheme.errorContainer
+                                  : scheme.surfaceContainer,
                             ),
                           ],
                         ),

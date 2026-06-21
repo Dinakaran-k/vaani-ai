@@ -14,6 +14,7 @@ The current codebase includes:
 - AI client contracts in `lib/features/ai/domain/ai_client.dart`.
 - Remote AI client wrappers in `lib/features/ai/data/remote_ai_clients.dart`.
 - Hybrid intent classification in `lib/features/ai/data/hybrid_ai_intent_classifier.dart`.
+- Custom on-device intent model in `lib/features/ai/data/custom_intent_model.dart`.
 - AI intent tests in `test/features/ai/hybrid_ai_intent_classifier_test.dart`.
 - Voice entrypoints in `lib/features/voice`.
 
@@ -30,6 +31,8 @@ Common commands should be resolved locally before using a remote model. This kee
 ### Remote Model Routing
 
 When a command cannot be resolved through local shortcuts, the app can route the transcript to a remote AI provider through a secure backend gateway. Gemini and OpenAI access should be brokered through Cloud Functions, not called with secrets embedded in the Flutter app.
+
+The preferred production direction is to keep the primary AI path on-device with Melange: `google/gemma-3n-E2B-it` for intent routing, `Menlo/Jan-nano` for invoice understanding, and the Whisper encoder/decoder pair (`vaibhav-zetic/whisper_small_encoder` + `OpenAI/whisper-tiny-decoder`) for speech-to-text.
 
 ### Multilingual Voice Assistance
 
@@ -51,6 +54,8 @@ Invoice scanning uses OCR as a separate capability from AI intent routing. The c
 ## Planned Production Enhancements
 
 - Cloud Functions gateway for Gemini and OpenAI.
+- Melange-backed on-device assistant models for Android, including voice intent routing, invoice understanding, and the Whisper speech pair.
+- A custom Vaani intent classifier that runs locally before Melange fallback for everyday commands.
 - Strict JSON schema validation for model responses.
 - Permission-aware tool execution based on business membership role.
 - Recorded AI workflow test fixtures.

@@ -16,6 +16,8 @@ class VaaniApp extends ConsumerWidget {
       title: 'Vaani AI',
       debugShowCheckedModeBanner: false,
       theme: VaaniTheme.light(),
+      darkTheme: VaaniTheme.dark(),
+      themeMode: ThemeMode.system,
       routerConfig: router,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,

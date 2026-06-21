@@ -1,0 +1,293 @@
+{
+  "algorithm": "multinomial_naive_bayes",
+  "alpha": 1.0,
+  "classes": {
+    "add_inventory": {
+      "prior": 0.25,
+      "tokenCounts": {
+        "add": 5,
+        "atta": 1,
+        "badhao": 1,
+        "bags": 2,
+        "bars": 1,
+        "biscuits": 1,
+        "bottles": 1,
+        "boxes": 1,
+        "chawal": 1,
+        "cold": 1,
+        "crates": 1,
+        "dalo": 1,
+        "drink": 1,
+        "increase": 1,
+        "karo": 1,
+        "kg": 2,
+        "num_10": 1,
+        "num_12": 1,
+        "num_15": 1,
+        "num_20": 2,
+        "num_24": 1,
+        "num_25": 1,
+        "num_30": 1,
+        "num_5": 1,
+        "num_8": 1,
+        "of": 2,
+        "packet": 1,
+        "pens": 1,
+        "put": 1,
+        "restock": 1,
+        "rice": 2,
+        "soap": 1,
+        "tea": 1,
+        "water": 1
+      },
+      "totalTokens": 43
+    },
+    "low_stock": {
+      "prior": 0.25,
+      "tokenCounts": {
+        "alert": 1,
+        "almost": 1,
+        "are": 1,
+        "below": 1,
+        "dikhao": 1,
+        "finished": 1,
+        "hai": 1,
+        "inventory": 2,
+        "is": 1,
+        "items": 4,
+        "kam": 2,
+        "list": 1,
+        "low": 6,
+        "now": 1,
+        "products": 2,
+        "running": 1,
+        "show": 2,
+        "stock": 5,
+        "threshold": 1,
+        "what": 1,
+        "which": 1,
+        "with": 1
+      },
+      "totalTokens": 38
+    },
+    "pending_payments": {
+      "prior": 0.25,
+      "tokenCounts": {
+        "balance": 1,
+        "customer": 1,
+        "dikhao": 1,
+        "due": 2,
+        "dues": 3,
+        "has": 2,
+        "invoices": 1,
+        "list": 2,
+        "pay": 1,
+        "payment": 2,
+        "payments": 1,
+        "pending": 3,
+        "reminder": 1,
+        "reminders": 1,
+        "show": 1,
+        "still": 1,
+        "to": 1,
+        "today": 1,
+        "udhaar": 1,
+        "unpaid": 2,
+        "who": 2
+      },
+      "totalTokens": 31
+    },
+    "sales_today": {
+      "prior": 0.25,
+      "tokenCounts": {
+        "aaj": 2,
+        "are": 1,
+        "batao": 1,
+        "did": 1,
+        "dikhao": 1,
+        "for": 1,
+        "how": 2,
+        "ka": 1,
+        "ki": 1,
+        "much": 1,
+        "report": 2,
+        "revenue": 1,
+        "s": 2,
+        "sale": 1,
+        "sales": 6,
+        "sell": 1,
+        "show": 2,
+        "summary": 1,
+        "today": 8,
+        "turnover": 1,
+        "we": 1
+      },
+      "totalTokens": 38
+    }
+  },
+  "examples": [
+    {
+      "label": "add_inventory",
+      "text": "Add 20 rice bags"
+    },
+    {
+      "label": "add_inventory",
+      "text": "Add 12 kg atta"
+    },
+    {
+      "label": "add_inventory",
+      "text": "Restock 15 soap bars"
+    },
+    {
+      "label": "add_inventory",
+      "text": "Put 8 boxes of tea"
+    },
+    {
+      "label": "add_inventory",
+      "text": "Add 24 bottles of water"
+    },
+    {
+      "label": "add_inventory",
+      "text": "20 bags rice add karo"
+    },
+    {
+      "label": "add_inventory",
+      "text": "10 kg chawal dalo"
+    },
+    {
+      "label": "add_inventory",
+      "text": "25 packet biscuits badhao"
+    },
+    {
+      "label": "add_inventory",
+      "text": "5 crates cold drink add"
+    },
+    {
+      "label": "add_inventory",
+      "text": "Increase 30 pens"
+    },
+    {
+      "label": "sales_today",
+      "text": "Show today's sales"
+    },
+    {
+      "label": "sales_today",
+      "text": "How much did we sell today"
+    },
+    {
+      "label": "sales_today",
+      "text": "Aaj ki sales dikhao"
+    },
+    {
+      "label": "sales_today",
+      "text": "today sales report"
+    },
+    {
+      "label": "sales_today",
+      "text": "sales today summary"
+    },
+    {
+      "label": "sales_today",
+      "text": "show today's revenue"
+    },
+    {
+      "label": "sales_today",
+      "text": "aaj ka sale batao"
+    },
+    {
+      "label": "sales_today",
+      "text": "today turnover"
+    },
+    {
+      "label": "sales_today",
+      "text": "how are sales today"
+    },
+    {
+      "label": "sales_today",
+      "text": "sales report for today"
+    },
+    {
+      "label": "low_stock",
+      "text": "Show low stock items"
+    },
+    {
+      "label": "low_stock",
+      "text": "Which products are running low"
+    },
+    {
+      "label": "low_stock",
+      "text": "kam stock items dikhao"
+    },
+    {
+      "label": "low_stock",
+      "text": "low inventory alert"
+    },
+    {
+      "label": "low_stock",
+      "text": "what is low stock now"
+    },
+    {
+      "label": "low_stock",
+      "text": "list items with low stock"
+    },
+    {
+      "label": "low_stock",
+      "text": "stock kam hai"
+    },
+    {
+      "label": "low_stock",
+      "text": "items almost finished"
+    },
+    {
+      "label": "low_stock",
+      "text": "products below threshold"
+    },
+    {
+      "label": "low_stock",
+      "text": "show low inventory"
+    },
+    {
+      "label": "pending_payments",
+      "text": "Show pending payments"
+    },
+    {
+      "label": "pending_payments",
+      "text": "Who has unpaid dues"
+    },
+    {
+      "label": "pending_payments",
+      "text": "Udhaar reminders"
+    },
+    {
+      "label": "pending_payments",
+      "text": "payment due list"
+    },
+    {
+      "label": "pending_payments",
+      "text": "pending dues dikhao"
+    },
+    {
+      "label": "pending_payments",
+      "text": "who still has to pay"
+    },
+    {
+      "label": "pending_payments",
+      "text": "unpaid invoices"
+    },
+    {
+      "label": "pending_payments",
+      "text": "payment reminder list"
+    },
+    {
+      "label": "pending_payments",
+      "text": "dues pending today"
+    },
+    {
+      "label": "pending_payments",
+      "text": "customer balance due"
+    }
+  ],
+  "labelCount": 4,
+  "version": 1,
+  "vocabSize": 91
+}

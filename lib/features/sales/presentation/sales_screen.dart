@@ -109,7 +109,9 @@ class _SalesScreenState extends State<SalesScreen> {
                                 alignment: Alignment.bottomCenter,
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    gradient: VaaniTheme.aiGradient,
+                                    gradient: VaaniTheme.aiGradientFor(
+                                      Theme.of(context).brightness,
+                                    ),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
@@ -170,41 +172,52 @@ class _SalesScreenState extends State<SalesScreen> {
 
   Future<void> _showNewSaleSheet(BuildContext context) {
     final rootContext = context;
+    final scheme = Theme.of(context).colorScheme;
     return showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      backgroundColor: VaaniTheme.surface,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: scheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (sheetContext) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Record Sale',
-                style: Theme.of(sheetContext).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Create a local draft now; backend billing persistence and receipt export can attach to this flow.',
-                style: Theme.of(sheetContext).textTheme.bodyLarge?.copyWith(
-                      color: VaaniTheme.onSurfaceVariant,
-                    ),
-              ),
-              const SizedBox(height: 20),
-              FilledButton.icon(
-                onPressed: () {
-                  Navigator.of(sheetContext).pop();
-                  showVaaniSnackBar(rootContext, 'Sale draft created');
-                },
-                icon: const Icon(Icons.receipt_long_outlined),
-                label: const Text('Create draft'),
-              ),
-            ],
+        return SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(
+              24,
+              8,
+              24,
+              28 + MediaQuery.viewInsetsOf(sheetContext).bottom,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Record Sale',
+                  style: Theme.of(sheetContext).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Create a local draft now; backend billing persistence and receipt export can attach to this flow.',
+                  style: Theme.of(sheetContext).textTheme.bodyLarge?.copyWith(
+                        color: VaaniTheme.onSurfaceVariant,
+                      ),
+                ),
+                const SizedBox(height: 20),
+                FilledButton.icon(
+                  onPressed: () {
+                    Navigator.of(sheetContext).pop();
+                    showVaaniSnackBar(rootContext, 'Sale draft created');
+                  },
+                  icon: const Icon(Icons.receipt_long_outlined),
+                  label: const Text('Create draft'),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -226,6 +239,7 @@ class _TopProduct extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final positive = !trend.startsWith('-');
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -240,7 +254,7 @@ class _TopProduct extends StatelessWidget {
             child: Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: VaaniTheme.primaryContainer,
+                  backgroundColor: scheme.primaryContainer,
                   child: Text(name.characters.first),
                 ),
                 const SizedBox(width: 14),
@@ -260,9 +274,7 @@ class _TopProduct extends StatelessWidget {
                     Text(
                       trend,
                       style: TextStyle(
-                        color: positive
-                            ? VaaniTheme.secondary
-                            : Theme.of(context).colorScheme.error,
+                        color: positive ? scheme.secondary : scheme.error,
                         fontWeight: FontWeight.w800,
                       ),
                     ),

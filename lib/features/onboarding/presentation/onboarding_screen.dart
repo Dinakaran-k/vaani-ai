@@ -72,7 +72,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     radius: 1.1,
                     colors: [
                       _pages[_index].color.withValues(alpha: 0.25),
-                      VaaniTheme.surface,
+                      Theme.of(context).colorScheme.surface,
                     ],
                   ),
                 ),
@@ -95,7 +95,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         children: [
                           TextSpan(
                             text: page.highlight,
-                            style: const TextStyle(color: VaaniTheme.primary),
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
                           ),
                         ],
                       ),
@@ -118,10 +120,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               alignment: Alignment.bottomCenter,
               child: Container(
                 padding: const EdgeInsets.fromLTRB(20, 24, 20, 28),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       color: Color(0x1F4648D4),
                       blurRadius: 28,
@@ -164,7 +166,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Future<void> _finish() async {
     final settings = await Hive.openBox<Object?>('settings');
     await settings.put('onboardingComplete', true);
-    if (mounted) context.go('/home');
+    if (mounted) context.go('/login');
   }
 
   void _nextPage() {
@@ -204,9 +206,12 @@ class _OnboardingIllustration extends StatelessWidget {
               width: 162,
               height: 246,
               decoration: BoxDecoration(
-                color: const Color(0xFFEFFDF8),
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(34),
-                border: Border.all(color: const Color(0xFF102A43), width: 8),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                  width: 8,
+                ),
               ),
             ),
             AnimatedAiGlow(
@@ -214,8 +219,12 @@ class _OnboardingIllustration extends StatelessWidget {
               glowColor: page.color,
               child: CircleAvatar(
                 radius: 58,
-                backgroundColor: Colors.white,
-                child: Icon(page.icon, color: VaaniTheme.primary, size: 58),
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                child: Icon(
+                  page.icon,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 58,
+                ),
               ),
             ),
             Positioned(
@@ -224,11 +233,14 @@ class _OnboardingIllustration extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 32, vertical: 18),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(40),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.16),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .scrim
+                          .withValues(alpha: 0.16),
                       blurRadius: 18,
                       offset: const Offset(0, 8),
                     ),
@@ -264,7 +276,9 @@ class _PagePill extends StatelessWidget {
       height: 8,
       margin: const EdgeInsets.symmetric(horizontal: 5),
       decoration: BoxDecoration(
-        color: active ? VaaniTheme.primary : const Color(0xFFE4E1ED),
+        color: active
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).colorScheme.outlineVariant,
         borderRadius: BorderRadius.circular(999),
       ),
     );

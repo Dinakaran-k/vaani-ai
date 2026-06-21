@@ -1,0 +1,10 @@
+# Copy this file to `android/local.properties` and fill in your values locally.
+MELANGE_PERSONAL_KEY=
+MELANGE_VOICE_INTENT_MODEL_NAME=google/gemma-3n-E2B-it
+MELANGE_INVOICE_MODEL_NAME=Menlo/Jan-nano
+MELANGE_ASR_ENCODER_MODEL_NAME=vaibhav-zetic/whisper_small_encoder
+MELANGE_ASR_DECODER_MODEL_NAME=OpenAI/whisper-tiny-decoder
+MELANGE_ASR_MODEL_NAME=vaibhav-zetic/whisper_small_encoder
+MELANGE_LANGUAGE_MODEL_NAME=SentenceTransformers/nli-MiniLM2-L6-H768
+MELANGE_INVENTORY_MODEL_NAME=Qwen/Qwen3-Reranker-0.6B
+MELANGE_MODEL_NAME=google/gemma-3n-E2B-it

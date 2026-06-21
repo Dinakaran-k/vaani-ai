@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/auth/application/auth_providers.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/inventory/presentation/inventory_screen.dart';
@@ -14,8 +16,37 @@ import '../features/voice/presentation/voice_assistant_screen.dart';
 import '../shared/presentation/vaani_shell.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
+  final authState = ref.watch(authStateProvider);
+
   return GoRouter(
     initialLocation: '/',
+    redirect: (context, state) {
+      if (kDebugMode) {
+        return null;
+      }
+
+      if (authState.isLoading) {
+        return null;
+      }
+
+      final location = state.uri.path;
+      final isPublicRoute =
+          location == '/' || location == '/onboarding' || location == '/login';
+      final isAuthenticated = authState.valueOrNull != null;
+
+      if (!isAuthenticated && !isPublicRoute) {
+        return '/login';
+      }
+
+      if (isAuthenticated &&
+          (location == '/' ||
+              location == '/onboarding' ||
+              location == '/login')) {
+        return '/home';
+      }
+
+      return null;
+    },
     routes: [
       GoRoute(path: '/', builder: (_, __) => const SplashScreen()),
       GoRoute(

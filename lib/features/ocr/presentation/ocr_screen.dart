@@ -1,43 +1,36 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/theme.dart';
+import '../../../features/ai/application/melange_providers.dart';
 import '../../../shared/presentation/vaani_shell.dart';
 
-class OcrScreen extends StatefulWidget {
+class OcrScreen extends ConsumerStatefulWidget {
   const OcrScreen({super.key, this.cameraEnabled = true});
 
   final bool cameraEnabled;
 
   @override
-  State<OcrScreen> createState() => _OcrScreenState();
+  ConsumerState<OcrScreen> createState() => _OcrScreenState();
 }
 
-class _OcrScreenState extends State<OcrScreen> {
+class _OcrScreenState extends ConsumerState<OcrScreen>
+    with WidgetsBindingObserver {
   CameraController? _cameraController;
   var _cameraState = _ScannerCameraState.loading;
   var _scanning = false;
   var _flashOn = false;
   var _queuedItemCount = 0;
-  final _invoiceItems = <_InvoiceItemUi>[
-    _InvoiceItemUi(
-      icon: Icons.shopping_bag_outlined,
-      name: 'Rice (Premium 25kg)',
-      qty: 'Qty: 10 bags',
-      amount: 'Rs 8,500',
-    ),
-    _InvoiceItemUi(
-      icon: Icons.water_drop_outlined,
-      name: 'Mustard Oil (1L)',
-      qty: 'Qty: 24 units',
-      amount: 'Rs 3,950',
-    ),
-  ];
+  final _invoiceItems = _defaultInvoiceItems
+      .map((item) => item.copyWith(selected: true))
+      .toList(growable: true);
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     if (widget.cameraEnabled) {
       _initializeCamera();
     } else {
@@ -47,8 +40,22 @@ class _OcrScreenState extends State<OcrScreen> {
 
   @override
   void dispose() {
-    _cameraController?.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    _disposeCamera(updateState: false);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (!widget.cameraEnabled) return;
+    if (state == AppLifecycleState.resumed) {
+      _initializeCamera();
+    } else if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden ||
+        state == AppLifecycleState.detached) {
+      _disposeCamera(updateState: true);
+    }
   }
 
   @override
@@ -83,9 +90,10 @@ class _OcrScreenState extends State<OcrScreen> {
               minChildSize: 0.32,
               maxChildSize: 0.82,
               builder: (context, controller) {
+                final scheme = Theme.of(context).colorScheme;
                 return Container(
-                  decoration: const BoxDecoration(
-                    color: VaaniTheme.surface,
+                  decoration: BoxDecoration(
+                    color: scheme.surface,
                     borderRadius:
                         BorderRadius.vertical(top: Radius.circular(28)),
                   ),
@@ -98,7 +106,7 @@ class _OcrScreenState extends State<OcrScreen> {
                           width: 58,
                           height: 6,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFC7C4D7),
+                            color: scheme.outlineVariant,
                             borderRadius: BorderRadius.circular(999),
                           ),
                         ),
@@ -122,7 +130,7 @@ class _OcrScreenState extends State<OcrScreen> {
                               size: 18,
                             ),
                             backgroundColor: VaaniTheme.primary,
-                            labelStyle: const TextStyle(color: Colors.white),
+                            labelStyle: TextStyle(color: scheme.onPrimary),
                           ),
                         ],
                       ),
@@ -136,6 +144,26 @@ class _OcrScreenState extends State<OcrScreen> {
                                   ? VaaniTheme.secondary
                                   : VaaniTheme.onSurfaceVariant,
                             ),
+                      ),
+                      const SizedBox(height: 6),
+                      FutureBuilder<Map<String, Object?>>(
+                        future: ref.watch(melangeModelsProvider.future),
+                        builder: (context, snapshot) {
+                          final data = snapshot.data ?? const {};
+                          final invoiceModel =
+                              data['invoiceModel'] as String? ?? 'unknown';
+                          final asrEncoderModel =
+                              data['asrEncoderModel'] as String? ?? 'unknown';
+                          final asrDecoderModel =
+                              data['asrDecoderModel'] as String? ?? 'unknown';
+                          return Text(
+                            'Melange invoice model: $invoiceModel | Whisper encoder: $asrEncoderModel | Whisper decoder: $asrDecoderModel',
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: VaaniTheme.onSurfaceVariant,
+                                    ),
+                          );
+                        },
                       ),
                       const SizedBox(height: 18),
                       for (final item in _invoiceItems) ...[
@@ -200,7 +228,7 @@ class _OcrScreenState extends State<OcrScreen> {
         ResolutionPreset.medium,
         enableAudio: false,
       );
-      await _cameraController?.dispose();
+      await _disposeCamera(updateState: false);
       await controller.initialize();
       if (!mounted) {
         await controller.dispose();
@@ -216,6 +244,23 @@ class _OcrScreenState extends State<OcrScreen> {
       if (mounted) setState(() => _cameraState = _ScannerCameraState.mock);
     } catch (_) {
       if (mounted) setState(() => _cameraState = _ScannerCameraState.mock);
+    }
+  }
+
+  Future<void> _disposeCamera({required bool updateState}) async {
+    final controller = _cameraController;
+    _cameraController = null;
+    if (updateState && mounted) {
+      setState(() {
+        _cameraState = widget.cameraEnabled
+            ? _ScannerCameraState.loading
+            : _ScannerCameraState.mock;
+      });
+    }
+    if (controller != null) {
+      try {
+        await controller.dispose();
+      } catch (_) {}
     }
   }
 
@@ -235,16 +280,59 @@ class _OcrScreenState extends State<OcrScreen> {
 
   Future<void> _simulateScan() async {
     if (_scanning) return;
+    final messenger = ScaffoldMessenger.of(context);
     setState(() => _scanning = true);
     await Future<void>.delayed(const Duration(milliseconds: 650));
     if (!mounted) return;
-    setState(() {
-      _scanning = false;
-      for (final item in _invoiceItems) {
-        item.selected = true;
+    try {
+      final parsed = await ref.read(melangeAiClientProvider).extractInvoice(
+            ocrText: _sampleInvoiceText,
+            locale: 'en-IN',
+          );
+      final nextItems = <_InvoiceItemUi>[];
+      final items = parsed['items'];
+      if (items is List) {
+        for (final item in items) {
+          if (item is Map) {
+            nextItems.add(
+              _InvoiceItemUi(
+                icon: Icons.shopping_bag_outlined,
+                name: '${item['name'] ?? 'Item'}',
+                qty:
+                    'Qty: ${item['quantity'] ?? '?'} ${item['unit'] ?? 'units'}',
+                amount: _formatAmount(item['price']),
+              ),
+            );
+          }
+        }
       }
-    });
-    showVaaniSnackBar(context, 'Invoice scan refreshed');
+
+      setState(() {
+        _scanning = false;
+        _invoiceItems
+          ..clear()
+          ..addAll(
+            (nextItems.isEmpty ? _defaultInvoiceItems : nextItems)
+                .map((item) => item.copyWith(selected: true)),
+          );
+      });
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Invoice parsed on-device')),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _scanning = false;
+        _invoiceItems
+          ..clear()
+          ..addAll(
+            _defaultInvoiceItems.map((item) => item.copyWith(selected: true)),
+          );
+      });
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Invoice scan refreshed')),
+      );
+    }
   }
 
   void _queueSelectedItems(int selectedCount) {
@@ -281,7 +369,9 @@ class _ScannerPreview extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.only(top: 8),
-      decoration: const BoxDecoration(color: Color(0xFF10111A)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+      ),
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -295,9 +385,9 @@ class _ScannerPreview extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.black.withValues(alpha: 0.50),
+                  Theme.of(context).colorScheme.scrim.withValues(alpha: 0.48),
                   Colors.transparent,
-                  Colors.black.withValues(alpha: 0.62),
+                  Theme.of(context).colorScheme.scrim.withValues(alpha: 0.62),
                 ],
               ),
             ),
@@ -309,8 +399,9 @@ class _ScannerPreview extends StatelessWidget {
               height: scanning ? 238 : 218,
               decoration: BoxDecoration(
                 border: Border.all(
-                  color:
-                      scanning ? VaaniTheme.secondaryContainer : Colors.white,
+                  color: scanning
+                      ? VaaniTheme.secondaryContainer
+                      : Theme.of(context).colorScheme.onSurface,
                   width: 4,
                 ),
                 borderRadius: BorderRadius.circular(22),
@@ -343,7 +434,7 @@ class _ScannerPreview extends StatelessWidget {
               right: 24,
               top: 92,
               child: VaaniCard(
-                color: Colors.white.withValues(alpha: 0.92),
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -389,15 +480,16 @@ class _CameraFallbackPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Stack(
       fit: StackFit.expand,
       children: [
         Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF303038), Color(0xFF0F172A)],
+              colors: [scheme.surfaceContainerHighest, scheme.surface],
             ),
           ),
         ),
@@ -409,11 +501,11 @@ class _CameraFallbackPreview extends StatelessWidget {
               height: 318,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: const Color(0xFFF7F2EA),
+                color: scheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(22),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.38),
+                    color: scheme.scrim.withValues(alpha: 0.38),
                     blurRadius: 36,
                     offset: const Offset(0, 20),
                   ),
@@ -432,7 +524,7 @@ class _CameraFallbackPreview extends StatelessWidget {
                       height: 10,
                       width: i.isEven ? 150 : 112,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFD8D2C7),
+                        color: scheme.outlineVariant,
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
@@ -443,7 +535,7 @@ class _CameraFallbackPreview extends StatelessWidget {
                     height: 14,
                     width: 180,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFCAC3B8),
+                      color: scheme.outlineVariant,
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
@@ -481,7 +573,7 @@ class _ScannerStatusChip extends StatelessWidget {
           size: 18,
         ),
         label: Text(label),
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       ),
     );
   }
@@ -539,6 +631,53 @@ class _InvoiceItemUi {
   final String qty;
   final String amount;
   bool selected = true;
+
+  _InvoiceItemUi copyWith({
+    IconData? icon,
+    String? name,
+    String? qty,
+    String? amount,
+    bool? selected,
+  }) {
+    return _InvoiceItemUi(
+      icon: icon ?? this.icon,
+      name: name ?? this.name,
+      qty: qty ?? this.qty,
+      amount: amount ?? this.amount,
+    )..selected = selected ?? this.selected;
+  }
+}
+
+final _defaultInvoiceItems = <_InvoiceItemUi>[
+  _InvoiceItemUi(
+    icon: Icons.shopping_bag_outlined,
+    name: 'Rice (Premium 25kg)',
+    qty: 'Qty: 10 bags',
+    amount: 'Rs 8,500',
+  ),
+  _InvoiceItemUi(
+    icon: Icons.water_drop_outlined,
+    name: 'Mustard Oil (1L)',
+    qty: 'Qty: 24 units',
+    amount: 'Rs 3,950',
+  ),
+];
+
+const _sampleInvoiceText = '''
+Vaani Super Mart
+Invoice No: INV-2042
+Date: 20-06-2026
+GSTIN: 29ABCDE1234F1Z5
+Rice Premium 25kg 10 bags 8500
+Mustard Oil 1L 24 units 3950
+Total: 12450
+''';
+
+String _formatAmount(Object? value) {
+  if (value is num) {
+    return 'Rs ${value.toDouble().toStringAsFixed(value is int ? 0 : 2)}';
+  }
+  return 'Rs ${value ?? '-'}';
 }
 
 enum _ScannerCameraState { loading, ready, empty, mock }

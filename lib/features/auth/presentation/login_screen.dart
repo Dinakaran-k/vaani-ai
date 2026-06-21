@@ -1,17 +1,20 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../app/theme.dart';
+import '../../../features/auth/application/auth_providers.dart';
+import '../../../core/errors/app_exception.dart';
 import '../../../shared/presentation/vaani_shell.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _email = TextEditingController(text: 'owner@vaani.ai');
   final _password = TextEditingController(text: 'password123');
@@ -51,7 +54,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       Text(
                         'Sign in to continue managing your shop.',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: VaaniTheme.onSurfaceVariant,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                             ),
                       ),
                     ],
@@ -149,7 +154,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       .textTheme
                                       .bodyMedium
                                       ?.copyWith(
-                                        color: VaaniTheme.onSurfaceVariant,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant,
                                       ),
                                 ),
                               ],
@@ -207,7 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Text(
                     'or',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: VaaniTheme.onSurfaceVariant,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                   ),
                 ),
@@ -218,16 +225,22 @@ class _LoginScreenState extends State<LoginScreen> {
             _AuthOption(
               icon: Icons.g_mobiledata_rounded,
               title: 'Continue with Google',
-              onTap: () => showVaaniSnackBar(
-                context,
-                'Google sign-in will connect after OAuth setup',
-              ),
+              onTap: _signInWithGoogle,
             ),
             const SizedBox(height: 12),
             _AuthOption(
               icon: Icons.storefront_outlined,
-              title: 'Open demo business',
-              onTap: () => context.go('/home'),
+              title: 'Open business workspace',
+              onTap: () {
+                if (kDebugMode) {
+                  context.go('/home');
+                  return;
+                }
+                showVaaniSnackBar(
+                  context,
+                  'Sign in first to open the workspace',
+                );
+              },
             ),
           ],
         ),
@@ -257,14 +270,48 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _continue() async {
     if (_formKey.currentState?.validate() != true) return;
     setState(() => _loading = true);
-    await Future<void>.delayed(const Duration(milliseconds: 450));
-    if (!mounted) return;
-    setState(() => _loading = false);
-    if (_mode == _LoginMode.phone) {
-      showVaaniSnackBar(context, 'OTP preview sent');
-      return;
+    try {
+      if (_mode == _LoginMode.phone) {
+        showVaaniSnackBar(context, 'OTP preview sent');
+        return;
+      }
+
+      await ref.read(authRepositoryProvider).signInWithEmail(
+            email: _email.text,
+            password: _password.text,
+          );
+      if (!mounted) return;
+      context.go('/home');
+    } on AuthException catch (error) {
+      if (!mounted) return;
+      showVaaniSnackBar(context, error.message);
+    } catch (_) {
+      if (!mounted) return;
+      showVaaniSnackBar(context, 'Sign-in failed. Please try again.');
+    } finally {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
-    context.go('/home');
+  }
+
+  Future<void> _signInWithGoogle() async {
+    setState(() => _loading = true);
+    try {
+      await ref.read(authRepositoryProvider).signInWithGoogle();
+      if (!mounted) return;
+      context.go('/home');
+    } on AuthException catch (error) {
+      if (!mounted) return;
+      showVaaniSnackBar(context, error.message);
+    } catch (_) {
+      if (!mounted) return;
+      showVaaniSnackBar(context, 'Google sign-in is not ready yet.');
+    } finally {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
+    }
   }
 }
 
@@ -281,8 +328,9 @@ class _AuthOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Material(
-      color: Colors.white,
+      color: scheme.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(16),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -290,14 +338,14 @@ class _AuthOption extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
           decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFFE2E0EE)),
+            border: Border.all(color: scheme.outlineVariant),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Row(
             children: [
               CircleAvatar(
-                backgroundColor: VaaniTheme.primaryContainer,
-                child: Icon(icon, color: VaaniTheme.primary),
+                backgroundColor: scheme.primaryContainer,
+                child: Icon(icon, color: scheme.primary),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -306,7 +354,7 @@ class _AuthOption extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded),
+              Icon(Icons.chevron_right_rounded, color: scheme.onSurfaceVariant),
             ],
           ),
         ),

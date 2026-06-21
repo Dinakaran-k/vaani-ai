@@ -29,6 +29,8 @@ Small merchants often manage business operations through paper notes, spreadshee
 - Dashboard for daily business status and quick actions.
 - Voice assistant entrypoint with speech-to-text and text-to-speech abstractions.
 - AI intent classification with deterministic shortcuts and remote AI client wrappers.
+- A custom on-device Vaani intent model that handles everyday commands before Melange fallback.
+- Primary AI functions are being shifted toward a Flutter-first on-device path using Riverpod plus Melange on Android.
 - Inventory domain model, Firestore repository, search, filters, add-product flow, and stock update workflows with local interactions.
 - Camera-first invoice scanner UI, OCR review selection, local queue feedback, and OCR result model.
 - Payment reminder model, filters, due detail sheet, and reminder state updates.
@@ -47,6 +49,7 @@ Small merchants often manage business operations through paper notes, spreadshee
 - Speech-to-text and text-to-speech for voice workflows.
 - Google ML Kit OCR for invoice scanning.
 - Gemini and OpenAI access through a planned secure Cloud Functions gateway.
+- Melange-backed Android deployment for the primary AI path.
 
 ## Architecture Summary
 
@@ -62,7 +65,7 @@ Core architectural principles:
 
 ## AI Usage
 
-Vaani AI uses AI for natural language interpretation, not uncontrolled data mutation. Common commands should be handled through deterministic shortcuts first. Unmatched commands may be routed through Gemini or OpenAI through Cloud Functions. The returned intent must match a typed schema before the app performs any business operation.
+Vaani AI uses AI for natural language interpretation, not uncontrolled data mutation. Common commands should be handled through deterministic shortcuts first, then the custom local Vaani classifier, and only then the Melange-backed Gemma intent model on Android. Jan-nano handles invoice understanding and the Whisper encoder/decoder pair handles speech-to-text. Gemini or OpenAI remain reserved for future secure fallback paths if needed. The returned intent must match a typed schema before the app performs any business operation.
 
 ## Current Status
 

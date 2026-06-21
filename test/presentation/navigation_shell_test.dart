@@ -16,9 +16,12 @@ void main() {
     final router = container.read(routerProvider)..go('/home');
 
     await tester.pumpWidget(
-      MaterialApp.router(
-        theme: VaaniTheme.light(),
-        routerConfig: router,
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          theme: VaaniTheme.light(),
+          routerConfig: router,
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -52,9 +55,12 @@ void main() {
     final router = container.read(routerProvider)..go('/home');
 
     await tester.pumpWidget(
-      MaterialApp.router(
-        theme: VaaniTheme.light(),
-        routerConfig: router,
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          theme: VaaniTheme.light(),
+          routerConfig: router,
+        ),
       ),
     );
     await tester.pumpAndSettle();

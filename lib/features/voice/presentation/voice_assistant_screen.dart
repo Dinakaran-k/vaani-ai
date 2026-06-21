@@ -1,29 +1,67 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
-import '../../../app/theme.dart';
+import '../../../features/ai/application/melange_providers.dart';
+import '../../../core/localization/supported_language.dart';
+import '../../../features/ai/data/hybrid_ai_intent_classifier.dart';
+import '../../../features/ai/domain/assistant_intent.dart';
+import '../../../features/voice/data/device_voice_engine.dart';
+import '../../../features/voice/domain/voice_engine.dart';
 import '../../../shared/presentation/vaani_motion.dart';
 import '../../../shared/presentation/vaani_shell.dart';
 
-class VoiceAssistantScreen extends StatefulWidget {
+class VoiceAssistantScreen extends ConsumerStatefulWidget {
   const VoiceAssistantScreen({super.key});
 
   @override
-  State<VoiceAssistantScreen> createState() => _VoiceAssistantScreenState();
+  ConsumerState<VoiceAssistantScreen> createState() =>
+      _VoiceAssistantScreenState();
 }
 
-class _VoiceAssistantScreenState extends State<VoiceAssistantScreen> {
+class _VoiceAssistantScreenState extends ConsumerState<VoiceAssistantScreen> {
+  late final VoiceEngine _voiceEngine = DeviceVoiceEngine(
+    speech: SpeechToText(),
+    tts: FlutterTts(),
+  );
+  late final Future<bool> _voiceReady = _voiceEngine.initialize();
+  late final Future<HybridAiIntentClassifier> _classifierFuture;
+  var _language = SupportedLanguage.english;
   var _listening = true;
+  var _latestIntentSummary =
+      'Tap a suggestion to try the local on-device fast path.';
+
+  @override
+  void initState() {
+    super.initState();
+    _classifierFuture = ref.read(melangeClassifierProvider.future);
+  }
+
+  @override
+  void dispose() {
+    _voiceEngine.stop();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: RadialGradient(
             center: Alignment.center,
             radius: 0.82,
-            colors: [Color(0xFFE1E0FF), VaaniTheme.surface],
+            colors: [
+              scheme.primaryContainer.withValues(
+                alpha: Theme.of(context).brightness == Brightness.dark
+                    ? 0.22
+                    : 0.78,
+              ),
+              scheme.surface,
+            ],
           ),
         ),
         child: SafeArea(
@@ -32,7 +70,7 @@ class _VoiceAssistantScreenState extends State<VoiceAssistantScreen> {
               final compact = constraints.maxHeight < 860;
               final glowSize = compact ? 148.0 : 196.0;
               return SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
                     minHeight: constraints.maxHeight - 44,
@@ -54,19 +92,28 @@ class _VoiceAssistantScreenState extends State<VoiceAssistantScreen> {
                                   key: ValueKey(_listening),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w800,
-                                    color: _listening
-                                        ? VaaniTheme.primary
-                                        : VaaniTheme.secondary,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(
+                                        color: _listening
+                                            ? scheme.primary
+                                            : scheme.secondary,
+                                      ),
                                 ),
                               ),
                             ),
                           ),
                           IconButton.filledTonal(
-                            onPressed: () => showVaaniLanguageSheet(context),
+                            onPressed: () async {
+                              final selected =
+                                  await showVaaniLanguageSheet(
+                                context,
+                                selectedLanguage: _language,
+                              );
+                              if (!mounted || selected == null) return;
+                              setState(() => _language = selected);
+                            },
                             icon: const Icon(Icons.language_rounded),
                           ),
                         ],
@@ -74,9 +121,8 @@ class _VoiceAssistantScreenState extends State<VoiceAssistantScreen> {
                       SizedBox(height: compact ? 20 : 42),
                       AnimatedAiGlow(
                         size: glowSize,
-                        glowColor: _listening
-                            ? VaaniTheme.primary
-                            : VaaniTheme.secondary,
+                        glowColor:
+                            _listening ? scheme.primary : scheme.secondary,
                         child: const AnimatedVaaniWaveform(),
                       ),
                       SizedBox(height: compact ? 18 : 28),
@@ -102,13 +148,86 @@ class _VoiceAssistantScreenState extends State<VoiceAssistantScreen> {
                                   .textTheme
                                   .bodyLarge
                                   ?.copyWith(
-                                    color: VaaniTheme.onSurfaceVariant,
+                                    color: scheme.onSurfaceVariant,
                                   ),
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(height: compact ? 20 : 42),
+                      const SizedBox(height: 12),
+                      Text(
+                        _latestIntentSummary,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: scheme.secondary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                      const SizedBox(height: 10),
+                      FutureBuilder<bool>(
+                        future: ref.watch(melangeReadyProvider.future),
+                        builder: (context, snapshot) {
+                          final ready = snapshot.data == true;
+                          final label = snapshot.connectionState ==
+                                  ConnectionState.waiting
+                              ? 'Checking Melange bridge...'
+                              : ready
+                                  ? 'Melange bridge ready for on-device inference.'
+                                  : 'Melange bridge not connected yet.';
+
+                          return Text(
+                            label,
+                            textAlign: TextAlign.center,
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: ready
+                                          ? scheme.secondary
+                                          : scheme.onSurfaceVariant,
+                                    ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 6),
+                      FutureBuilder<Map<String, Object?>>(
+                        future: ref.watch(melangeModelsProvider.future),
+                        builder: (context, snapshot) {
+                          final data = snapshot.data ?? const {};
+                          final voiceModel =
+                              data['voiceIntentModel'] as String? ?? 'unknown';
+                          final invoiceModel =
+                              data['invoiceModel'] as String? ?? 'unknown';
+                          final asrEncoderModel =
+                              data['asrEncoderModel'] as String? ?? 'unknown';
+                          final asrDecoderModel =
+                              data['asrDecoderModel'] as String? ?? 'unknown';
+                          return Text(
+                            'Voice model: $voiceModel | Invoice model: $invoiceModel | Whisper encoder: $asrEncoderModel | Whisper decoder: $asrDecoderModel',
+                            textAlign: TextAlign.center,
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: scheme.onSurfaceVariant,
+                                    ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 6),
+                      FutureBuilder<bool>(
+                        future: _voiceReady,
+                        builder: (context, snapshot) {
+                          final ready = snapshot.data == true;
+                          return Text(
+                            ready
+                                ? 'Voice input ready: ${_language.label}'
+                                : 'Preparing voice input...',
+                            textAlign: TextAlign.center,
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: scheme.onSurfaceVariant,
+                                    ),
+                          );
+                        },
+                      ),
+                      SizedBox(height: compact ? 16 : 32),
                       Wrap(
                         alignment: WrapAlignment.center,
                         spacing: 10,
@@ -134,8 +253,9 @@ class _VoiceAssistantScreenState extends State<VoiceAssistantScreen> {
                       ),
                       const SizedBox(height: 18),
                       FilledButton.icon(
-                        onPressed: () =>
-                            setState(() => _listening = !_listening),
+                        onPressed: _listening
+                            ? _startListening
+                            : () => setState(() => _listening = true),
                         icon: Icon(_listening ? Icons.mic_rounded : Icons.stop),
                         label: Text(_listening ? 'Hold to speak' : 'Stop'),
                       ),
@@ -150,9 +270,93 @@ class _VoiceAssistantScreenState extends State<VoiceAssistantScreen> {
     );
   }
 
-  void _useSuggestion(String text) {
+  Future<void> _startListening() async {
+    setState(() {
+      _listening = false;
+      _latestIntentSummary = 'Listening on-device...';
+    });
+
+    try {
+      final transcript = await _voiceEngine.listen(
+        language: _language,
+        timeout: const Duration(seconds: 6),
+      );
+      if (!mounted) return;
+      if (transcript.isEmpty) {
+        setState(() {
+          _latestIntentSummary = 'No speech detected. Try again.';
+          _listening = true;
+        });
+        return;
+      }
+
+      final classifier = await _classifierFuture;
+      final intent = await classifier.classify(
+        utterance: transcript,
+        locale: _language.speechLocale,
+      );
+      if (!mounted) return;
+
+      final summary = switch (intent) {
+        AddInventoryIntent(:final productName, :final quantity, :final unit) =>
+          'Heard "$transcript" -> add $quantity $unit of $productName.',
+        SalesTodayIntent() => 'Heard "$transcript" -> sales today.',
+        LowStockIntent() => 'Heard "$transcript" -> low stock items.',
+        PendingPaymentsIntent() => 'Heard "$transcript" -> pending payments.',
+        UnknownIntent() => 'Heard "$transcript" but could not map it.',
+      };
+      setState(() {
+        _latestIntentSummary = summary;
+        _listening = true;
+      });
+      await _voiceEngine.speak(summary, _language);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _latestIntentSummary =
+            'Voice input is unavailable right now. Try suggestion chips.';
+        _listening = true;
+      });
+    }
+  }
+
+  Future<void> _useSuggestion(String text) async {
+    final messenger = ScaffoldMessenger.of(context);
     setState(() => _listening = false);
-    showVaaniSnackBar(context, 'Command selected: $text');
+
+    try {
+      final classifier = await _classifierFuture;
+      final intent = await classifier.classify(
+        utterance: text,
+        locale: 'en-IN',
+      );
+      if (!mounted) return;
+
+      final summary = switch (intent) {
+        AddInventoryIntent(:final productName, :final quantity, :final unit) =>
+          'On-device AI recognized: add $quantity $unit of $productName.',
+        SalesTodayIntent() => 'On-device AI recognized: sales today.',
+        LowStockIntent() => 'On-device AI recognized: low stock items.',
+        PendingPaymentsIntent() => 'On-device AI recognized: pending payments.',
+        UnknownIntent() =>
+          'On-device AI needs a remote fallback for this command.',
+      };
+      setState(() => _latestIntentSummary = summary);
+      messenger.showSnackBar(
+        SnackBar(content: Text('Command selected: $text')),
+      );
+      await _voiceEngine.speak(summary, _language);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _latestIntentSummary =
+            'On-device AI is ready, and this command can fall back later.';
+      });
+    } finally {
+      if (mounted) {
+        setState(() => _listening = true);
+      }
+    }
   }
 }
 
@@ -164,6 +368,7 @@ class _SuggestionChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return ActionChip(
       label: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 132),
@@ -174,9 +379,12 @@ class _SuggestionChip extends StatelessWidget {
         ),
       ),
       onPressed: onTap,
-      backgroundColor: Colors.white,
-      side: const BorderSide(color: Color(0xFFC7C4D7)),
-      labelStyle: const TextStyle(fontWeight: FontWeight.w700),
+      backgroundColor: scheme.surfaceContainerHighest,
+      side: BorderSide(color: scheme.outlineVariant),
+      labelStyle: TextStyle(
+        fontWeight: FontWeight.w700,
+        color: scheme.onSurface,
+      ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(999),
       ),

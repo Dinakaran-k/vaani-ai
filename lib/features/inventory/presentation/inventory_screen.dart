@@ -165,11 +165,13 @@ class _InventoryScreenState extends State<InventoryScreen> {
   }
 
   Future<void> _showAddProductSheet() async {
+    final scheme = Theme.of(context).colorScheme;
     await showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
       isScrollControlled: true,
-      backgroundColor: VaaniTheme.surface,
+      useSafeArea: true,
+      backgroundColor: scheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
@@ -222,53 +224,56 @@ class _AddProductSheetState extends State<_AddProductSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        24,
-        8,
-        24,
-        28 + MediaQuery.viewInsetsOf(context).bottom,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Add Product', style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _nameController,
-            autofocus: true,
-            textInputAction: TextInputAction.next,
-            decoration: const InputDecoration(
-              labelText: 'Product name',
-              prefixIcon: Icon(Icons.inventory_2_outlined),
+    return SafeArea(
+      top: false,
+      child: SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(
+          24,
+          8,
+          24,
+          28 + MediaQuery.viewInsetsOf(context).bottom,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Add Product', style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _nameController,
+              autofocus: true,
+              textInputAction: TextInputAction.next,
+              decoration: const InputDecoration(
+                labelText: 'Product name',
+                prefixIcon: Icon(Icons.inventory_2_outlined),
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _categoryController,
-            textInputAction: TextInputAction.next,
-            decoration: const InputDecoration(
-              labelText: 'Category',
-              prefixIcon: Icon(Icons.category_outlined),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _categoryController,
+              textInputAction: TextInputAction.next,
+              decoration: const InputDecoration(
+                labelText: 'Category',
+                prefixIcon: Icon(Icons.category_outlined),
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _quantityController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              labelText: 'Opening quantity',
-              prefixIcon: Icon(Icons.add_box_outlined),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _quantityController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Opening quantity',
+                prefixIcon: Icon(Icons.add_box_outlined),
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
-          FilledButton.icon(
-            onPressed: _addProduct,
-            icon: const Icon(Icons.add),
-            label: const Text('Add product'),
-          ),
-        ],
+            const SizedBox(height: 20),
+            FilledButton.icon(
+              onPressed: _addProduct,
+              icon: const Icon(Icons.add),
+              label: const Text('Add product'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -294,6 +299,7 @@ class _InventoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final statusColor = product.healthy
         ? VaaniTheme.secondary
         : product.quantity == 0
@@ -305,9 +311,10 @@ class _InventoryTile extends StatelessWidget {
       onTap: () => showModalBottomSheet<void>(
         context: context,
         isScrollControlled: true,
+        useSafeArea: true,
         showDragHandle: true,
-        backgroundColor: VaaniTheme.surface,
-        barrierColor: Colors.black.withValues(alpha: 0.62),
+        backgroundColor: scheme.surface,
+        barrierColor: scheme.scrim.withValues(alpha: 0.62),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
@@ -390,72 +397,75 @@ class _UpdateStockSheetState extends State<_UpdateStockSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Update Stock', style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 6),
-          Text(
-            widget.product.name,
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          const SizedBox(height: 28),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              OutlinedButton(
-                onPressed: _quantity == 0
-                    ? null
-                    : () => setState(() => _quantity -= 1),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(72, 72),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+    return SafeArea(
+      top: false,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Update Stock', style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 6),
+            Text(
+              widget.product.name,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const SizedBox(height: 28),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                OutlinedButton(
+                  onPressed: _quantity == 0
+                      ? null
+                      : () => setState(() => _quantity -= 1),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(72, 72),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: const Icon(Icons.remove),
+                ),
+                Text(
+                  _quantity.toString(),
+                  style: Theme.of(context).textTheme.displaySmall,
+                ),
+                OutlinedButton(
+                  onPressed: () => setState(() => _quantity += 1),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(72, 72),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(36),
+                    ),
+                  ),
+                  child: const Icon(Icons.add, color: VaaniTheme.primary),
+                ),
+              ],
+            ),
+            const SizedBox(height: 28),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Cancel'),
                   ),
                 ),
-                child: const Icon(Icons.remove),
-              ),
-              Text(
-                _quantity.toString(),
-                style: Theme.of(context).textTheme.displaySmall,
-              ),
-              OutlinedButton(
-                onPressed: () => setState(() => _quantity += 1),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(72, 72),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(36),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () {
+                      widget.onSaved(_quantity);
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Save'),
                   ),
                 ),
-                child: const Icon(Icons.add, color: VaaniTheme.primary),
-              ),
-            ],
-          ),
-          const SizedBox(height: 28),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancel'),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: FilledButton(
-                  onPressed: () {
-                    widget.onSaved(_quantity);
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Save'),
-                ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -474,18 +484,19 @@ class _FilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: ChoiceChip(
         label: Text(label),
         selected: selected,
         onSelected: (_) => onSelected(),
-        backgroundColor: selected ? VaaniTheme.primaryContainer : Colors.white,
+        backgroundColor: selected ? scheme.primaryContainer : scheme.surface,
         side: BorderSide(
-          color: selected ? VaaniTheme.primary : const Color(0xFFC7C4D7),
+          color: selected ? scheme.primary : scheme.outlineVariant,
         ),
         labelStyle: TextStyle(
-          color: selected ? VaaniTheme.primary : VaaniTheme.onSurface,
+          color: selected ? scheme.primary : scheme.onSurface,
           fontWeight: FontWeight.w700,
         ),
       ),
